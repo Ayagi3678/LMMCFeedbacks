@@ -1,0 +1,15 @@
+{
+  "name": "com.yagi.lmmcfeedbacks",
+  "version": "1.0.0",
+  "displayName": "LMMCFeedbacks",
+  "description": "It's the tool to create feedback.(use `LitMotion`)",
+  "unity": "2022.3",
+  "license": "MIT",
+  "author": {
+    "name": "Ayagi3678",
+    "url": "https://github.com/Ayagi3678"
+  },
+  "dependencies": {
+    
+  }
+}
