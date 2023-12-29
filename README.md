@@ -1,4 +1,5 @@
 # LMMCFeedbacks :)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 - LMMCFeedbacks is a feedback create tool that runs on the high-performance tweening library LitMotion.
 - Feedback can be easily created on the inspector.
 ### Install for UPM
