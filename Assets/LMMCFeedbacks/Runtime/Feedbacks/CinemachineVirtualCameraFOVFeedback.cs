@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if USE_CINEMACHINE
+using System;
 using Cinemachine;
 using LitMotion;
 using LitMotion.Editor;
@@ -48,3 +49,4 @@ namespace LMMCFeedbacks
         public Color TagColor => FeedbackStyling.CameraFeedbackColor;
     }
 }
+#endif
