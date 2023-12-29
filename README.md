@@ -4,7 +4,7 @@
 - Feedback can be easily created on the inspector.
 ### Install for UPM
 ```
-https://github.com/Ayagi3678/LMMCFeedbacks.git?path=/Assets/MMCFeedbacks
+https://github.com/Ayagi3678/LMMCFeedbacks.git?path=/Assets/LMMCFeedbacks
 ```
 
 > `Package Manager` -> `+` -> `Add package from git URL...`
