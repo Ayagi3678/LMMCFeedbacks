@@ -1,5 +1,5 @@
 # LMMCFeedbacks :)
-Easy to create Feedback from the Inspector.
+- LMMCFeedbacks is a simple feedback creation tool that runs on the high-performance tweening library LitMotion.
 ### Install for UPM
 ```
 https://github.com/Ayagi3678/LMMCFeedbacks.git?path=/Assets/MMCFeedbacks
