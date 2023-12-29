@@ -57,10 +57,11 @@ namespace LMMCFeedbacks
             for (int i = 0; i < (loop?loopCount:1); i++)
             {
                 _feedbackTaskCaches.Clear();
-                foreach (var t in Feedbacks)
+                foreach (var feedback in Feedbacks)
                 {
-                    if(t is not IFeedbackHold hold) _feedbackTaskCaches.Add(t.Create().ToUniTask(destroyCancellationToken));
-                    else await t.Create().ToUniTask(destroyCancellationToken);
+                    if(!feedback.IsActive) continue;
+                    if(feedback is not IFeedbackHold) _feedbackTaskCaches.Add(feedback.Create().ToUniTask(destroyCancellationToken));
+                    else await feedback.Create().ToUniTask(destroyCancellationToken);
                 }
                 await UniTask.WhenAll(_feedbackTaskCaches);
             }
@@ -72,6 +73,7 @@ namespace LMMCFeedbacks
             {
                 foreach (var feedback in Feedbacks)
                 {
+                    if(!feedback.IsActive) continue;
                     await feedback.Create().ToUniTask(destroyCancellationToken);
                 }
             }
