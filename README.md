@@ -13,6 +13,8 @@ https://github.com/Ayagi3678/LMMCFeedbacks.git?path=/Assets/LMMCFeedbacks
 - [LitMotion](https://github.com/AnnulusGames/LitMotion)   : Tween
 - [UniTask](https://github.com/Cysharp/UniTask)   : async/await
 
+### Other Dependencies
+- Cinemachine
 # HOW TO USE
 1.  Attach FeedbackPlayer to any GameObject. (`Add Component` -> `Feedback Player`)
 2.  Add any Feedback to FeedbackPlayer.
