@@ -12,7 +12,7 @@ https://github.com/Ayagi3678/LMMCFeedbacks.git?path=/Assets/LMMCFeedbacks
 ### Must Dependencies (Install Together)
 - [LitMotion](https://github.com/AnnulusGames/LitMotion)   : Tween
 - [UniTask](https://github.com/Cysharp/UniTask)   : async/await
-
+> If there is an error, check the version of UnityEngine.Collections
 ### Other Dependencies
 - Cinemachine
 # HOW TO USE
