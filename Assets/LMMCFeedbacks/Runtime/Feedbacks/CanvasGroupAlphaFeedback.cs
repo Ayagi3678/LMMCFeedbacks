@@ -37,7 +37,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            initialAlpha = target.alpha;
+            InitialSetup();
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
