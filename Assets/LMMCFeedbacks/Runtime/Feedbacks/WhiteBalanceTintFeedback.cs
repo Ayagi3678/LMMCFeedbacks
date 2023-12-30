@@ -2,8 +2,8 @@
 using LitMotion;
 using LMMCFeedbacks.Extensions;
 using LMMCFeedbacks.Runtime;
+using LMMCFeedbacks.Runtime.Managers;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 #if UNITY_EDITOR
 using LitMotion.Editor;
@@ -11,10 +11,11 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class WhiteBalanceTintFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
+    [Serializable]
+    public class WhiteBalanceTintFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
-        [SerializeField] private Volume target;
+
 
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
@@ -43,7 +44,8 @@ namespace LMMCFeedbacks
         {
             Cancel();
             InitialSetup();
-            if (_whiteBalanceCache == null) _whiteBalanceCache = target.TryGetVolumeComponent<WhiteBalance>();
+            if (_whiteBalanceCache == null)
+                _whiteBalanceCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<WhiteBalance>();
             _whiteBalanceCache.active = true;
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
@@ -63,19 +65,22 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
-
         public void Initialize()
         {
-            if (_whiteBalanceCache != null) _whiteBalanceCache.tint.value = initialTint;
+            if (_whiteBalanceCache == null)
+                _whiteBalanceCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<WhiteBalance>();
+            _whiteBalanceCache.tint.value = initialTint;
         }
 
         public void InitialSetup()
         {
             if (isInitialized) return;
-            if (_whiteBalanceCache == null) _whiteBalanceCache = target.TryGetVolumeComponent<WhiteBalance>();
+            if (_whiteBalanceCache == null)
+                _whiteBalanceCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<WhiteBalance>();
             initialTint = _whiteBalanceCache.tint.value;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
     }
 }

@@ -2,8 +2,8 @@
 using LitMotion;
 using LMMCFeedbacks.Extensions;
 using LMMCFeedbacks.Runtime;
+using LMMCFeedbacks.Runtime.Managers;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 #if UNITY_EDITOR
 using LitMotion.Editor;
@@ -11,10 +11,11 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class VignetteIntensityFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
+    [Serializable]
+    public class VignetteIntensityFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
-        [SerializeField] private Volume target;
+
 
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
@@ -43,7 +44,8 @@ namespace LMMCFeedbacks
         {
             Cancel();
             InitialSetup();
-            if (_vignetteCache == null) _vignetteCache = target.TryGetVolumeComponent<Vignette>();
+            if (_vignetteCache == null)
+                _vignetteCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<Vignette>();
             _vignetteCache.active = true;
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
@@ -63,19 +65,22 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
-
         public void Initialize()
         {
-            if (_vignetteCache != null) _vignetteCache.intensity.Override(initialIntensity);
+            if (_vignetteCache == null)
+                _vignetteCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<Vignette>();
+            _vignetteCache.intensity.Override(initialIntensity);
         }
 
         public void InitialSetup()
         {
             if (isInitialized) return;
-            if (_vignetteCache == null) _vignetteCache = target.TryGetVolumeComponent<Vignette>();
+            if (_vignetteCache == null)
+                _vignetteCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<Vignette>();
             initialIntensity = _vignetteCache.intensity.value;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
     }
 }

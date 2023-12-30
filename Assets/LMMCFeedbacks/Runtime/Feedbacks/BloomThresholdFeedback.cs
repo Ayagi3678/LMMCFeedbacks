@@ -2,8 +2,8 @@
 using LitMotion;
 using LMMCFeedbacks.Extensions;
 using LMMCFeedbacks.Runtime;
+using LMMCFeedbacks.Runtime.Managers;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 #if UNITY_EDITOR
 using LitMotion.Editor;
@@ -11,10 +11,11 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class BloomThresholdFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
+    [Serializable]
+    public class BloomThresholdFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
-        [SerializeField] private Volume target;
+
 
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
@@ -43,7 +44,7 @@ namespace LMMCFeedbacks
         {
             Cancel();
             InitialSetup();
-            if (_bloomCache == null) _bloomCache = target.TryGetVolumeComponent<Bloom>();
+            if (_bloomCache == null) _bloomCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<Bloom>();
             _bloomCache.active = true;
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
@@ -63,19 +64,20 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
-
         public void Initialize()
         {
-            if (_bloomCache != null) _bloomCache.threshold.Override(initialIntensity);
+            if (_bloomCache == null) _bloomCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<Bloom>();
+            _bloomCache.threshold.Override(initialIntensity);
         }
 
         public void InitialSetup()
         {
             if (isInitialized) return;
-            if (_bloomCache == null) _bloomCache = target.TryGetVolumeComponent<Bloom>();
+            if (_bloomCache == null) _bloomCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<Bloom>();
             initialIntensity = _bloomCache.threshold.value;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
     }
 }

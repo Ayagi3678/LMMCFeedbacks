@@ -19,13 +19,19 @@ namespace LMMCFeedbacks
 
         public readonly Action OnCompleted;
 
+        private CancellationTokenSource _playCancellationTokenSource;
+
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
         [SerializeReference] public List<IFeedback> Feedbacks = new();
 
-        private CancellationTokenSource _playCancellationTokenSource;
         private void Start()
         {
             if (playOnAwake) Play();
+        }
+
+        private void OnDisable()
+        {
+            _playCancellationTokenSource?.Cancel();
         }
 
         private void OnDestroy()
@@ -92,11 +98,6 @@ namespace LMMCFeedbacks
                 }
 
             OnCompleted?.Invoke();
-        }
-
-        private void OnDisable()
-        {
-            _playCancellationTokenSource?.Cancel();
         }
     }
 }

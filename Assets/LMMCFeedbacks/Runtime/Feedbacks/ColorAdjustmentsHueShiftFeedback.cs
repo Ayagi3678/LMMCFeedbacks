@@ -2,8 +2,8 @@
 using LitMotion;
 using LMMCFeedbacks.Extensions;
 using LMMCFeedbacks.Runtime;
+using LMMCFeedbacks.Runtime.Managers;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 #if UNITY_EDITOR
 using LitMotion.Editor;
@@ -11,10 +11,11 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class ColorAdjustmentsHueShiftFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
+    [Serializable] public class ColorAdjustmentsHueShiftFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint,
+        IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
-        [SerializeField] private Volume target;
+
 
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
@@ -44,7 +45,8 @@ namespace LMMCFeedbacks
             Cancel();
             InitialSetup();
             if (_colorAdjustmentsCache == null)
-                _colorAdjustmentsCache = target.TryGetVolumeComponent<ColorAdjustments>();
+                _colorAdjustmentsCache =
+                    FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<ColorAdjustments>();
             _colorAdjustmentsCache.active = true;
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
@@ -64,20 +66,24 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
-
         public void Initialize()
         {
-            if (_colorAdjustmentsCache != null) _colorAdjustmentsCache.hueShift.Override(initialHueShift);
+            if (_colorAdjustmentsCache == null)
+                _colorAdjustmentsCache =
+                    FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<ColorAdjustments>();
+            _colorAdjustmentsCache.hueShift.Override(initialHueShift);
         }
 
         public void InitialSetup()
         {
             if (isInitialized) return;
             if (_colorAdjustmentsCache == null)
-                _colorAdjustmentsCache = target.TryGetVolumeComponent<ColorAdjustments>();
+                _colorAdjustmentsCache =
+                    FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<ColorAdjustments>();
             initialHueShift = _colorAdjustmentsCache.hueShift.value;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
     }
 }

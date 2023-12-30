@@ -2,8 +2,8 @@
 using LitMotion;
 using LMMCFeedbacks.Extensions;
 using LMMCFeedbacks.Runtime;
+using LMMCFeedbacks.Runtime.Managers;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 #if UNITY_EDITOR
 using LitMotion.Editor;
@@ -11,10 +11,11 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class LensDistortionIntensityFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
+    [Serializable] public class LensDistortionIntensityFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint,
+        IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
-        [SerializeField] private Volume target;
+
 
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
@@ -42,7 +43,8 @@ namespace LMMCFeedbacks
         {
             Cancel();
             InitialSetup();
-            if (_lensDistortionCache == null) _lensDistortionCache = target.TryGetVolumeComponent<LensDistortion>();
+            if (_lensDistortionCache == null)
+                _lensDistortionCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<LensDistortion>();
             _lensDistortionCache.active = true;
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
@@ -63,19 +65,22 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
-
         public void Initialize()
         {
-            if (_lensDistortionCache != null) _lensDistortionCache.intensity.Override(initialIntensity);
+            if (_lensDistortionCache == null)
+                _lensDistortionCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<LensDistortion>();
+            _lensDistortionCache.intensity.Override(initialIntensity);
         }
 
         public void InitialSetup()
         {
             if (isInitialized) return;
-            if (_lensDistortionCache == null) _lensDistortionCache = target.TryGetVolumeComponent<LensDistortion>();
+            if (_lensDistortionCache == null)
+                _lensDistortionCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<LensDistortion>();
             initialIntensity = _lensDistortionCache.intensity.value;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
     }
 }
