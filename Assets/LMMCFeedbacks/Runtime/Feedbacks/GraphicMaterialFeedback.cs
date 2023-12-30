@@ -49,19 +49,19 @@ namespace LMMCFeedbacks
         [SerializeField] [DisplayIf(nameof(propertyType), 4)]
         private Vector3 vector3One;
 
-        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))] [DisplayIf(nameof(propertyType), 0)]
+        [Space(10)] [SerializeField] [DisplayIf(nameof(propertyType), 0)] [DisableIf(nameof(isInitialized))]
         private float initialFloat;
 
-        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))] [DisplayIf(nameof(propertyType), 1)]
+        [Space(10)] [SerializeField] [DisplayIf(nameof(propertyType), 1)] [DisableIf(nameof(isInitialized))]
         private int initialInt;
 
-        [SerializeField] [Space(10)] [DisplayIf(nameof(propertyType), 2)]
+        [SerializeField] [Space(10)] [DisplayIf(nameof(propertyType), 2)] [DisableIf(nameof(isInitialized))]
         private Color initialColor;
 
-        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))] [DisplayIf(nameof(propertyType), 3)]
+        [Space(10)] [SerializeField] [DisplayIf(nameof(propertyType), 3)] [DisableIf(nameof(isInitialized))]
         private Vector2 initialVector2;
 
-        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))] [DisplayIf(nameof(propertyType), 4)]
+        [Space(10)] [SerializeField] [DisplayIf(nameof(propertyType), 4)] [DisableIf(nameof(isInitialized))]
         private Vector3 initialVector3;
 
         [HideInInspector] public bool isInitialized;
@@ -162,8 +162,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.GraphicFeedbackColor;
-
         public void Initialize()
         {
             switch (propertyType)
@@ -217,5 +215,7 @@ namespace LMMCFeedbacks
                 isInitialized = true;
             }
         }
+
+        public Color TagColor => FeedbackStyling.GraphicFeedbackColor;
     }
 }

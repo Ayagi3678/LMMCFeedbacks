@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using LitMotion;
 using LMMCFeedbacks.Runtime;
@@ -21,6 +22,7 @@ namespace LMMCFeedbacks
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
         [SerializeReference] public List<IFeedback> Feedbacks = new();
 
+        private CancellationTokenSource _playCancellationTokenSource;
         private void Start()
         {
             if (playOnAwake) Play();
@@ -33,13 +35,14 @@ namespace LMMCFeedbacks
 
         public void Play()
         {
+            _playCancellationTokenSource = new CancellationTokenSource();
             switch (playMode)
             {
                 case FeedbackPlayMode.Concurrent:
-                    PlayConcurrent().Forget();
+                    PlayConcurrent(_playCancellationTokenSource.Token).Forget();
                     break;
                 case FeedbackPlayMode.Sequential:
-                    PlaySequential().Forget();
+                    PlaySequential(_playCancellationTokenSource.Token).Forget();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -48,6 +51,7 @@ namespace LMMCFeedbacks
 
         public void Stop()
         {
+            _playCancellationTokenSource?.Cancel();
             foreach (var feedback in Feedbacks) feedback.Cancel();
         }
 
@@ -59,7 +63,7 @@ namespace LMMCFeedbacks
                     initializable.Initialize();
         }
 
-        public async UniTask PlayConcurrent()
+        public async UniTask PlayConcurrent(CancellationToken cancellationToken)
         {
             for (var i = 0; i < (loop ? loopCount : 1); i++)
             {
@@ -68,8 +72,8 @@ namespace LMMCFeedbacks
                 {
                     if (!feedback.IsActive) continue;
                     if (feedback is not IFeedbackHold)
-                        _feedbackTaskCaches.Add(feedback.Create().ToUniTask(destroyCancellationToken));
-                    else await feedback.Create().ToUniTask(destroyCancellationToken);
+                        _feedbackTaskCaches.Add(feedback.Create().ToUniTask(cancellationToken));
+                    else await feedback.Create().ToUniTask(cancellationToken);
                 }
 
                 await UniTask.WhenAll(_feedbackTaskCaches);
@@ -78,16 +82,21 @@ namespace LMMCFeedbacks
             OnCompleted?.Invoke();
         }
 
-        public async UniTask PlaySequential()
+        public async UniTask PlaySequential(CancellationToken cancellationToken)
         {
             for (var i = 0; i < (loop ? loopCount : 1); i++)
                 foreach (var feedback in Feedbacks)
                 {
                     if (!feedback.IsActive) continue;
-                    await feedback.Create().ToUniTask(destroyCancellationToken);
+                    await feedback.Create().ToUniTask(cancellationToken);
                 }
 
             OnCompleted?.Invoke();
+        }
+
+        private void OnDisable()
+        {
+            _playCancellationTokenSource?.Cancel();
         }
     }
 }
