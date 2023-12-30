@@ -44,7 +44,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            if (isInitialized) InitialSetup();
+            if (!isInitialized) InitialSetup();
             var builder = LMotion.Shake.Create(isRelative ? target.localScale + startValue : startValue,
                         strength, durationTime)
                     .WithDelay(options.delayTime)

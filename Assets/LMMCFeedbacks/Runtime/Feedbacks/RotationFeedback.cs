@@ -40,7 +40,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            if (isInitialized) InitialSetup();
+            if (!isInitialized) InitialSetup();
             var zeroRotation = space == TransformSpace.World ? target.eulerAngles : target.localEulerAngles;
             var oneRotation = space == TransformSpace.World ? target.eulerAngles : target.localEulerAngles;
             var builder = LMotion

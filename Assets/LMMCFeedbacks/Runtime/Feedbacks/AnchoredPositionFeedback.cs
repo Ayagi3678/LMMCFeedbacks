@@ -38,7 +38,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            if (isInitialized) InitialSetup();
+            if (!isInitialized) InitialSetup();
             var builder = LMotion
                 .Create(isRelative ? zero + target.anchoredPosition : zero,
                     isRelative ? one + target.anchoredPosition : one, durationTime).WithDelay(options.delayTime)

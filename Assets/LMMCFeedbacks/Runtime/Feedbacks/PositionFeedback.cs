@@ -40,7 +40,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            if (isInitialized) InitialSetup();
+            if (!isInitialized) InitialSetup();
             var currentPosition = space == TransformSpace.World ? target.position : target.localPosition;
             var builder = LMotion.Create(isRelative ? currentPosition + zero : zero,
                     isRelative ? currentPosition + one : one

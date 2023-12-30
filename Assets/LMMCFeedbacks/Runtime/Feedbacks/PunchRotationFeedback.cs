@@ -43,7 +43,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            if (isInitialized) InitialSetup();
+            if (!isInitialized) InitialSetup();
             var builder = LMotion.Punch
                     .Create(isRelative ? target.rotation.eulerAngles + startValue : startValue, strength, durationTime)
                     .WithDelay(options.delayTime)

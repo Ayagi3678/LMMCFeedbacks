@@ -44,7 +44,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            if (isInitialized) InitialSetup();
+            if (!isInitialized) InitialSetup();
             if (_colorAdjustmentsCache == null)
                 _colorAdjustmentsCache =
                     FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<ColorAdjustments>();

@@ -42,7 +42,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            if (isInitialized) InitialSetup();
+            if (!isInitialized) InitialSetup();
             if (_lensDistortionCache == null)
                 _lensDistortionCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<LensDistortion>();
             _lensDistortionCache.active = true;
