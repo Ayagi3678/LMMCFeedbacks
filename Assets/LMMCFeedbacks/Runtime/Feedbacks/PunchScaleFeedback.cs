@@ -40,7 +40,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion.Punch
                     .Create(isRelative ? target.localScale + startValue : startValue, strength, durationTime)
                     .WithDelay(options.delayTime)
@@ -61,8 +61,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.TransformFeedbackColor;
-
         public void Initialize()
         {
             target.localScale = initialScale;
@@ -70,9 +68,10 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             initialScale = target.localScale;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.TransformFeedbackColor;
     }
 }

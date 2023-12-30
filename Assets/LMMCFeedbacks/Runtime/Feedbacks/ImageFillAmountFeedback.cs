@@ -38,7 +38,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
@@ -57,8 +57,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.UIFeedbackColor;
-
         public void Initialize()
         {
             target.fillAmount = initialFillAmount;
@@ -67,11 +65,10 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (!isInitialized)
-            {
-                initialFillAmount = target.fillAmount;
-                isInitialized = true;
-            }
+            initialFillAmount = target.fillAmount;
+            isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.UIFeedbackColor;
     }
 }

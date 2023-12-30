@@ -46,7 +46,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion.Shake
                 .Create(isRelative ? target.position + startValue : startValue, strength, durationTime)
                 .WithDelay(options.delayTime)
@@ -75,8 +75,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.TransformFeedbackColor;
-
         public void Initialize()
         {
             switch (space)
@@ -94,9 +92,10 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             initialPosition = space == TransformSpace.World ? target.position : target.localPosition;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.TransformFeedbackColor;
     }
 }

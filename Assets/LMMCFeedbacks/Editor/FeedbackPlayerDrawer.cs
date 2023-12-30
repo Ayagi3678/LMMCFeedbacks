@@ -139,16 +139,10 @@ namespace LMMCFeedbacks.Editor
             var rect = GUILayoutUtility.GetRect(EditorGUIUtility.currentViewWidth, 0);
 
             FeedbackPlayer.playMode = (FeedbackPlayMode)EditorGUILayout.EnumPopup("Play Mode", FeedbackPlayer.playMode);
-            FeedbackPlayer.loop = EditorGUILayout.Toggle("Loop", FeedbackPlayer.loop);
-            if (FeedbackPlayer.loop)
-            {
-                FeedbackPlayer.loopCount =
-                    EditorGUILayout.IntField("Loop Count", Mathf.Max(FeedbackPlayer.loopCount, 1));
-                rect.y += EditorGUIUtility.singleLineHeight + 2;
-            }
 
             FeedbackPlayer.playOnAwake = EditorGUILayout.Toggle("Play On Awake", FeedbackPlayer.playOnAwake);
             EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("options"), true);
             _reorderableList?.DoLayoutList();
             rect.y += _reorderableList.GetHeight();
             if (EditorGUI.EndChangeCheck()) serializedObject.ApplyModifiedProperties();
@@ -160,16 +154,21 @@ namespace LMMCFeedbacks.Editor
                 var dropdown = new FeedbackDropDown(new AdvancedDropdownState());
                 rect.y += EditorGUIUtility.singleLineHeight * 4 + 10;
                 rect.width = EditorGUIUtility.currentViewWidth * .6f;
-                dropdown.OnSelect += feedbackType => AddFeedback(feedbackType);
+                dropdown.OnSelect += AddFeedback;
                 dropdown.Show(rect);
             }
 
             if (GUILayout.Button("Clear", new GUIStyle("minibutton"))) _feedbacks.Clear();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Play", new GUIStyle("minibuttonmid"))) FeedbackPlayer.Play();
-            if (GUILayout.Button("Stop", new GUIStyle("minibuttonmid"))) FeedbackPlayer.Stop();
-            if (GUILayout.Button("Initialize", new GUIStyle("minibuttonmid"))) FeedbackPlayer.Initialize();
+            if (GUILayout.Button("Play", new GUIStyle("minibuttonmid"),
+                    GUILayout.Width(EditorGUIUtility.currentViewWidth * .25f))) FeedbackPlayer.Play();
+            if (GUILayout.Button("Stop", new GUIStyle("minibuttonmid"),
+                    GUILayout.Width(EditorGUIUtility.currentViewWidth * .25f))) FeedbackPlayer.Stop();
+            if (GUILayout.Button("Initialize", new GUIStyle("minibuttonmid"),
+                    GUILayout.Width(EditorGUIUtility.currentViewWidth * .25f))) FeedbackPlayer.Initialize();
+            if (GUILayout.Button("Initial Set", new GUIStyle("minibuttonmid"),
+                    GUILayout.Width(EditorGUIUtility.currentViewWidth * .2f))) FeedbackPlayer.InitialSetup();
             EditorGUILayout.EndHorizontal();
         }
 

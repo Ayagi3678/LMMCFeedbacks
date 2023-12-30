@@ -12,8 +12,7 @@ namespace LMMCFeedbacks
     {
         public bool playOnAwake;
         public FeedbackPlayMode playMode;
-        public bool loop;
-        [Min(1)] public int loopCount = 1;
+        public FeedbackPlayerOption options;
 
         private readonly List<UniTask> _feedbackTaskCaches = new();
 
@@ -69,9 +68,16 @@ namespace LMMCFeedbacks
                     initializable.Initialize();
         }
 
+        public void InitialSetup()
+        {
+            foreach (var feedback in Feedbacks)
+                if (feedback is IFeedbackInitializable initializable)
+                    initializable.InitialSetup();
+        }
+
         public async UniTask PlayConcurrent(CancellationToken cancellationToken)
         {
-            for (var i = 0; i < (loop ? loopCount : 1); i++)
+            for (var i = 0; i < (options.loop ? options.loopCount : 1); i++)
             {
                 _feedbackTaskCaches.Clear();
                 foreach (var feedback in Feedbacks)
@@ -85,18 +91,20 @@ namespace LMMCFeedbacks
                 await UniTask.WhenAll(_feedbackTaskCaches);
             }
 
+            if (options.initializeOnComplete) Initialize();
             OnCompleted?.Invoke();
         }
 
         public async UniTask PlaySequential(CancellationToken cancellationToken)
         {
-            for (var i = 0; i < (loop ? loopCount : 1); i++)
+            for (var i = 0; i < (options.loop ? options.loopCount : 1); i++)
                 foreach (var feedback in Feedbacks)
                 {
                     if (!feedback.IsActive) continue;
                     await feedback.Create().ToUniTask(cancellationToken);
                 }
 
+            if (options.initializeOnComplete) Initialize();
             OnCompleted?.Invoke();
         }
     }

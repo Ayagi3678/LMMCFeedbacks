@@ -44,7 +44,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             if (_chromaticAberrationCache == null)
                 _chromaticAberrationCache =
                     FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<ChromaticAberration>();
@@ -78,7 +78,6 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             if (_chromaticAberrationCache == null)
                 _chromaticAberrationCache =
                     FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<ChromaticAberration>();

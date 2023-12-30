@@ -45,7 +45,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion.Shake.Create(isRelative ? target.anchoredPosition + startValue : startValue,
                         strength, durationTime)
                     .WithDelay(options.delayTime)
@@ -67,8 +67,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.RectTransformFeedbackColor;
-
         public void Initialize()
         {
             target.anchoredPosition = initialPosition;
@@ -76,9 +74,10 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             initialPosition = target.anchoredPosition;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.RectTransformFeedbackColor;
     }
 }

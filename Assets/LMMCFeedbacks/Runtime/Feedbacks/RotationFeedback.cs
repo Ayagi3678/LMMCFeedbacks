@@ -40,7 +40,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var zeroRotation = space == TransformSpace.World ? target.eulerAngles : target.localEulerAngles;
             var oneRotation = space == TransformSpace.World ? target.eulerAngles : target.localEulerAngles;
             var builder = LMotion
@@ -69,8 +69,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.TransformFeedbackColor;
-
         public void Initialize()
         {
             switch (space)
@@ -88,9 +86,10 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             initialEulerAngles = space == TransformSpace.World ? target.eulerAngles : target.localEulerAngles;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.TransformFeedbackColor;
     }
 }

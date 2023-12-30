@@ -9,7 +9,8 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class TMPTextColorFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
+    [Serializable]
+    public class TMPTextColorFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private TMP_Text target;
@@ -37,7 +38,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
@@ -56,8 +57,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.UIFeedbackColor;
-
         public void Initialize()
         {
             target.color = initialColor;
@@ -65,9 +64,10 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             initialColor = target.color;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.UIFeedbackColor;
     }
 }

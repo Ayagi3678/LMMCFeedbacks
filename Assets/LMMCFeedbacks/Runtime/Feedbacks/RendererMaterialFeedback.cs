@@ -83,7 +83,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             if (IsMaterialCacheNull) _materialCache = target.material;
             switch (propertyType)
             {
@@ -195,7 +195,6 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             if (IsMaterialCacheNull) _materialCache = target.material;
             switch (propertyType)
             {

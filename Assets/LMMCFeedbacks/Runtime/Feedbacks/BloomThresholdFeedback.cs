@@ -43,7 +43,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             if (_bloomCache == null) _bloomCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<Bloom>();
             _bloomCache.active = true;
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
@@ -72,7 +72,6 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             if (_bloomCache == null) _bloomCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<Bloom>();
             initialIntensity = _bloomCache.threshold.value;
             isInitialized = true;

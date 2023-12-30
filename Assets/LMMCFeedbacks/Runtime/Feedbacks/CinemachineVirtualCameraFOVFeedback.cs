@@ -10,7 +10,8 @@ using UnityEngine;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class CinemachineVirtualCameraFOVFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
+    [Serializable]
+    public class CinemachineVirtualCameraFOVFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private CinemachineVirtualCamera target;
@@ -39,7 +40,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
@@ -58,8 +59,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.CameraFeedbackColor;
-
         public void Initialize()
         {
             target.m_Lens.FieldOfView = initialFOV;
@@ -67,12 +66,11 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (!isInitialized)
-            {
-                initialFOV = target.m_Lens.FieldOfView;
-                isInitialized = true;
-            }
+            initialFOV = target.m_Lens.FieldOfView;
+            isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.CameraFeedbackColor;
     }
 }
 #endif

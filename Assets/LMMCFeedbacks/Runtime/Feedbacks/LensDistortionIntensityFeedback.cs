@@ -42,7 +42,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             if (_lensDistortionCache == null)
                 _lensDistortionCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<LensDistortion>();
             _lensDistortionCache.active = true;
@@ -74,7 +74,6 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             if (_lensDistortionCache == null)
                 _lensDistortionCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<LensDistortion>();
             initialIntensity = _lensDistortionCache.intensity.value;

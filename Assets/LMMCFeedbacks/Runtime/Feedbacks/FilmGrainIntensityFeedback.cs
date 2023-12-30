@@ -43,7 +43,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             if (_filmGrainCache == null)
                 _filmGrainCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<FilmGrain>();
             _filmGrainCache.active = true;
@@ -74,7 +74,6 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             if (_filmGrainCache == null)
                 _filmGrainCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<FilmGrain>();
             initialIntensity = _filmGrainCache.intensity.value;

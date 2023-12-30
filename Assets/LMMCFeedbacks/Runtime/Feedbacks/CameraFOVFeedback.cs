@@ -37,7 +37,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
@@ -56,8 +56,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.CameraFeedbackColor;
-
         public void Initialize()
         {
             target.fieldOfView = initialFOV;
@@ -65,11 +63,10 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (!isInitialized)
-            {
-                initialFOV = target.fieldOfView;
-                isInitialized = true;
-            }
+            initialFOV = target.fieldOfView;
+            isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.CameraFeedbackColor;
     }
 }

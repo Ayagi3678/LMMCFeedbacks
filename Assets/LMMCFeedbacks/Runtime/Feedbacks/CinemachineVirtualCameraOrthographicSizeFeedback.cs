@@ -9,7 +9,8 @@ using UnityEngine;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class CinemachineVirtualCameraOrthographicSizeFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
+    [Serializable]
+    public class CinemachineVirtualCameraOrthographicSizeFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Camera target;
@@ -38,7 +39,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
@@ -57,8 +58,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.CameraFeedbackColor;
-
         public void Initialize()
         {
             target.orthographicSize = initialFOV;
@@ -66,12 +65,11 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (!isInitialized)
-            {
-                initialFOV = target.orthographicSize;
-                isInitialized = true;
-            }
+            initialFOV = target.orthographicSize;
+            isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.CameraFeedbackColor;
     }
 }
 #endif

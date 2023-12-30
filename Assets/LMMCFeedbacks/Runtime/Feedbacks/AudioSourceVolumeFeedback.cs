@@ -9,7 +9,7 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class AudioSourceVolumeFeedback : IFeedback, IFeedbackTagColor ,IFeedbackInitializable
+    [Serializable] public class AudioSourceVolumeFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private AudioSource target;
@@ -38,7 +38,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
@@ -57,8 +57,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.AudioFeedbackColor;
-
         public void Initialize()
         {
             target.volume = initialVolume;
@@ -66,11 +64,10 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (!isInitialized)
-            {
-                initialVolume = target.volume;
-                isInitialized = true;
-            }
+            initialVolume = target.volume;
+            isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.AudioFeedbackColor;
     }
 }

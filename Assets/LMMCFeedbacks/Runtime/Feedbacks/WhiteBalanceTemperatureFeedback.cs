@@ -43,7 +43,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             if (_whiteBalanceCache == null)
                 _whiteBalanceCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<WhiteBalance>();
             _whiteBalanceCache.active = true;
@@ -75,7 +75,6 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             if (_whiteBalanceCache == null)
                 _whiteBalanceCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<WhiteBalance>();
             initialTemperature = _whiteBalanceCache.temperature.value;

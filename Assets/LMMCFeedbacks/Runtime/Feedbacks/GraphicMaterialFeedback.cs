@@ -83,7 +83,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             if (IsMaterialCacheNull) _materialCache = target.material;
             Handle = propertyType switch
             {
@@ -189,31 +189,29 @@ namespace LMMCFeedbacks
         public void InitialSetup()
         {
             if (IsMaterialCacheNull) _materialCache = target.material;
-            if (!isInitialized)
-            {
-                switch (propertyType)
-                {
-                    case TweenMaterialPropertyType.Float:
-                        initialFloat = _materialCache.GetFloat(propertyName);
-                        break;
-                    case TweenMaterialPropertyType.Int:
-                        initialInt = _materialCache.GetInt(propertyName);
-                        break;
-                    case TweenMaterialPropertyType.Color:
-                        initialColor = _materialCache.GetColor(propertyName);
-                        break;
-                    case TweenMaterialPropertyType.Vector2:
-                        initialVector2 = _materialCache.GetVector(propertyName);
-                        break;
-                    case TweenMaterialPropertyType.Vector3:
-                        initialVector3 = _materialCache.GetVector(propertyName);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
 
-                isInitialized = true;
+            switch (propertyType)
+            {
+                case TweenMaterialPropertyType.Float:
+                    initialFloat = _materialCache.GetFloat(propertyName);
+                    break;
+                case TweenMaterialPropertyType.Int:
+                    initialInt = _materialCache.GetInt(propertyName);
+                    break;
+                case TweenMaterialPropertyType.Color:
+                    initialColor = _materialCache.GetColor(propertyName);
+                    break;
+                case TweenMaterialPropertyType.Vector2:
+                    initialVector2 = _materialCache.GetVector(propertyName);
+                    break;
+                case TweenMaterialPropertyType.Vector3:
+                    initialVector3 = _materialCache.GetVector(propertyName);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+
+            isInitialized = true;
         }
 
         public Color TagColor => FeedbackStyling.GraphicFeedbackColor;

@@ -43,7 +43,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             if (_vignetteCache == null)
                 _vignetteCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<Vignette>();
             _vignetteCache.active = true;
@@ -74,7 +74,6 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             if (_vignetteCache == null)
                 _vignetteCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<Vignette>();
             initialIntensity = _vignetteCache.intensity.value;

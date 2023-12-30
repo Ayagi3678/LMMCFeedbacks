@@ -10,8 +10,8 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable]
-    public class TMPTextFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackForceMeshUpdate, IFeedbackInitializable
+    [Serializable] public class TMPTextFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint,
+        IFeedbackForceMeshUpdate, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private TMP_Text target;
@@ -45,7 +45,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion.String.Create128Bytes(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
@@ -70,8 +70,6 @@ namespace LMMCFeedbacks
 
         public TMP_Text Target => target;
 
-        public Color TagColor => FeedbackStyling.UIFeedbackColor;
-
         public void Initialize()
         {
             target.text = initialText;
@@ -79,9 +77,10 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (isInitialized) return;
             initialText = target.text;
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.UIFeedbackColor;
     }
 }

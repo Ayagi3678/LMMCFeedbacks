@@ -38,7 +38,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Cancel();
-            InitialSetup();
+            if (isInitialized) InitialSetup();
             var builder = LMotion
                 .Create(isRelative ? zero + target.anchoredPosition : zero,
                     isRelative ? one + target.anchoredPosition : one, durationTime).WithDelay(options.delayTime)
@@ -65,11 +65,8 @@ namespace LMMCFeedbacks
 
         public void InitialSetup()
         {
-            if (!isInitialized)
-            {
-                initialPosition = target.anchoredPosition;
-                isInitialized = true;
-            }
+            initialPosition = target.anchoredPosition;
+            isInitialized = true;
         }
 
         public Color TagColor => FeedbackStyling.RectTransformFeedbackColor;
