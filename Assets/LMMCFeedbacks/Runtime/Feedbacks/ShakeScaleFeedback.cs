@@ -1,9 +1,11 @@
 ﻿using System;
 using LitMotion;
-using LitMotion.Editor;
+using LitMotion.Extensions;
 using LMMCFeedbacks.Runtime;
-using LMMCFeedbacks.Runtime.Enums;
 using UnityEngine;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
@@ -16,36 +18,66 @@ namespace LMMCFeedbacks
         [SerializeField] private Ease ease;
         [SerializeField] private Vector3 startValue;
         [SerializeField] private Vector3 strength;
+        [SerializeField] private int frequency = 10;
+        [SerializeField] [Range(0, 1)] private float dampingRatio = 1f;
+        [SerializeField] private bool randomSeed = true;
+
+        [SerializeField] [DisplayIf(nameof(randomSeed), false)] [Min(1)]
+        private uint seed = 1;
+
+        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))]
+        private Vector3 initialScale;
+
+        [HideInInspector] public bool isInitialized;
 
         public bool IsActive { get; set; } = true;
 
-        public string Name => "Transform/Shake Scale";
+        public string Name => "Transform/Shake/Scale (Shake)";
         public FeedbackOption Options => options;
         public MotionHandle Handle { get; private set; }
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
             Cancel();
-            var createScale = target.localScale;
-            Handle = LMotion.Shake.Create(startValue, strength, durationTime).WithDelay(options.delayTime)
-                .WithIgnoreTimeScale(options.ignoreTimeScale)
-                .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                .WithEase(ease)
+            InitialSetup();
+            var builder = LMotion.Shake.Create(isRelative ? target.localScale + startValue : startValue,
+                        strength, durationTime)
+                    .WithDelay(options.delayTime)
+                    .WithIgnoreTimeScale(options.ignoreTimeScale)
+                    .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
+                    .WithFrequency(frequency)
+                    .WithDampingRatio(dampingRatio)
+                    .WithEase(ease)
+                    .WithOnComplete(() =>
+                    {
+                        if (options.initializeOnComplete) Initialize();
+                    })
+                ;
 #if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update)
+            builder.WithScheduler(EditorMotionScheduler.Update);
 #endif
-                .Bind(value =>
-                {
-                    target.localScale = isRelative ? value + createScale : value;
-                });
+            if (!randomSeed) builder.WithRandomSeed(seed);
+            Handle = builder.BindToLocalScale(target);
             return Handle;
         }
 
         public Color TagColor => FeedbackStyling.TransformFeedbackColor;
+
+        public void Initialize()
+        {
+            target.localScale = initialScale;
+        }
+
+        public void InitialSetup()
+        {
+            if (isInitialized) return;
+            initialScale = target.localScale;
+            isInitialized = true;
+        }
     }
 }

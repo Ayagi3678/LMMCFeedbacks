@@ -1,21 +1,27 @@
 ﻿using System;
 using LitMotion;
-
 using LMMCFeedbacks.Runtime;
 using TMPro;
 using UnityEngine;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class TMPTextColorFeedback : IFeedback, IFeedbackTagColor , IFeedbackSceneRepaint
+    [Serializable] public class TMPTextColorFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private TMP_Text target;
-        
+
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
         [SerializeField] private Color zero;
         [SerializeField] private Color one;
+
+        [SerializeField] [Space(10)] private Color initialColor;
+
+        [HideInInspector] public bool isInitialized;
 
         public bool IsActive { get; set; } = true;
 
@@ -25,26 +31,43 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
             Cancel();
-            Handle = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
+            InitialSetup();
+            var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
-#if UNITY_EDITOR
-                .WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
-#endif
-                .Bind(value =>
+                .WithOnComplete(() =>
                 {
-                    target.color = value;
-                });
+                    if (options.initializeOnComplete) Initialize();
+                })
+
+#if UNITY_EDITOR
+                .WithScheduler(EditorMotionScheduler.Update);
+#endif
+
+
+            Handle = builder.BindWithState(target, (value, state) => state.color = value);
             return Handle;
         }
 
         public Color TagColor => FeedbackStyling.UIFeedbackColor;
+
+        public void Initialize()
+        {
+            target.color = initialColor;
+        }
+
+        public void InitialSetup()
+        {
+            if (isInitialized) return;
+            initialColor = target.color;
+            isInitialized = true;
+        }
     }
 }

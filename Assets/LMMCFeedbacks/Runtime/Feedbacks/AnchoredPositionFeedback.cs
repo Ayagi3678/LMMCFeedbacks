@@ -1,12 +1,15 @@
 ﻿using System;
 using LitMotion;
-
+using LitMotion.Extensions;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class AnchoredPositionFeedback : IFeedback, IFeedbackTagColor
+    [Serializable] public class AnchoredPositionFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private RectTransform target;
@@ -16,6 +19,11 @@ namespace LMMCFeedbacks
         [SerializeField] private Vector2 zero;
         [SerializeField] private Vector2 one;
 
+        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))]
+        private Vector2 initialPosition;
+
+        [HideInInspector] public bool isInitialized;
+
         public bool IsActive { get; set; } = true;
 
         public string Name => "Rect Transform/Anchored Position";
@@ -24,25 +32,44 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
-            var initialPosition = target.anchoredPosition;
             Cancel();
-            Handle = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
+            InitialSetup();
+            var builder = LMotion
+                .Create(isRelative ? zero + target.anchoredPosition : zero,
+                    isRelative ? one + target.anchoredPosition : one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
-                #if UNITY_EDITOR
-.WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
-#endif
-                .Bind(value =>
+                .WithOnComplete(() =>
                 {
-                    target.anchoredPosition = isRelative ? value + initialPosition : value;
-                });
+                    if (options.initializeOnComplete) Initialize();
+                })
+
+#if UNITY_EDITOR
+                .WithScheduler(EditorMotionScheduler.Update);
+#endif
+            Handle = builder.BindToAnchoredPosition(target);
             return Handle;
+        }
+
+
+        public void Initialize()
+        {
+            target.anchoredPosition = initialPosition;
+        }
+
+        public void InitialSetup()
+        {
+            if (!isInitialized)
+            {
+                initialPosition = target.anchoredPosition;
+                isInitialized = true;
+            }
         }
 
         public Color TagColor => FeedbackStyling.RectTransformFeedbackColor;

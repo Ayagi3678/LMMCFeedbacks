@@ -1,10 +1,12 @@
 ﻿using System;
 using LitMotion;
-
 using LitMotion.Extensions;
 using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Enums;
 using UnityEngine;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
@@ -14,10 +16,16 @@ namespace LMMCFeedbacks
         [SerializeField] private Transform target;
         [SerializeField] private TransformSpace space;
         [SerializeField] private bool isRelative;
-        [SerializeField] private float durationTime=1f;
+        [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
         [SerializeField] private Vector3 zero;
         [SerializeField] private Vector3 one;
+
+        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))]
+        private Vector3 initialPosition;
+
+        [HideInInspector] public bool isInitialized;
+
         public bool IsActive { get; set; } = true;
 
         public string Name => "Transform/Position";
@@ -26,38 +34,62 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
             Cancel();
-            var createPosition = space==TransformSpace.World?target.position:target.localPosition;
-            Handle = LMotion.Create(zero, one, durationTime)
+            InitialSetup();
+            var currentPosition = space == TransformSpace.World ? target.position : target.localPosition;
+            var builder = LMotion.Create(isRelative ? currentPosition + zero : zero,
+                    isRelative ? currentPosition + one : one
+                    , durationTime)
                 .WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
-                .WithLoops(options.loop?options.loopCount:1, options.loopType)
+                .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
-                #if UNITY_EDITOR
-.WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
-#endif
-                .BindWithState( target,(value, state) =>
+                .WithOnComplete(() =>
                 {
-                    switch (space)
-                    {
-                        case TransformSpace.World:
-                            state.position = isRelative?value+createPosition:value;
-                            break;
-                        case TransformSpace.Local:
-                            state.localPosition = isRelative?value+createPosition:value;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                });
+                    if (options.initializeOnComplete) Initialize();
+                })
+
+#if UNITY_EDITOR
+                .WithScheduler(EditorMotionScheduler.Update);
+#endif
+
+
+            Handle = space switch
+            {
+                TransformSpace.World => builder.BindToPosition(target),
+                TransformSpace.Local => builder.BindToLocalPosition(target),
+                _ => throw new ArgumentOutOfRangeException()
+            };
             return Handle;
         }
 
         public Color TagColor => FeedbackStyling.TransformFeedbackColor;
+
+        public void Initialize()
+        {
+            switch (space)
+            {
+                case TransformSpace.World:
+                    target.position = initialPosition;
+                    break;
+                case TransformSpace.Local:
+                    target.localPosition = initialPosition;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public void InitialSetup()
+        {
+            if (isInitialized) return;
+            initialPosition = space == TransformSpace.World ? target.position : target.localPosition;
+            isInitialized = true;
+        }
     }
 }

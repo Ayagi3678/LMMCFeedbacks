@@ -2,10 +2,13 @@
 using LitMotion;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class HoldFeedback : IFeedback, IFeedbackTagColor , IFeedbackHold
+    [Serializable] public class HoldFeedback : IFeedback, IFeedbackTagColor, IFeedbackHold
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private float holdTime = 1f;
@@ -17,23 +20,25 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if(Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
+
 
         public MotionHandle Create()
         {
-            if(Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
             Handle = LMotion.Create(0f, 0f, holdTime)
                 .WithDelay(options.delayTime)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
 #if UNITY_EDITOR
-                .WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
+                .WithScheduler(EditorMotionScheduler.Update)
 #endif
                 .RunWithoutBinding();
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.EtcFeedbackColor;
         public float HoldTime => holdTime;
+
+        public Color TagColor => FeedbackStyling.EtcFeedbackColor;
     }
 }

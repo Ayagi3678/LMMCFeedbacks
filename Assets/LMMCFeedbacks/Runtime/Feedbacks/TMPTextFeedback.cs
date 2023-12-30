@@ -4,20 +4,32 @@ using LitMotion.Extensions;
 using LMMCFeedbacks.Runtime;
 using TMPro;
 using UnityEngine;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class TMPTextFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint,IFeedbackForceMeshUpdate
+    [Serializable]
+    public class TMPTextFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackForceMeshUpdate
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private TMP_Text target;
         [SerializeField] private ScrambleMode scrambleMode;
-        [SerializeField][DisplayIf(nameof(scrambleMode),5)] private string scrambleChars;
+
+        [SerializeField] [DisplayIf(nameof(scrambleMode), 5)]
+        private string scrambleChars;
+
         [SerializeField] private bool richText;
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
         [SerializeField] private string zero;
         [SerializeField] private string one;
+
+        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))]
+        private string initialText;
+
+        [HideInInspector] public bool isInitialized;
 
         public bool IsActive { get; set; } = true;
 
@@ -27,33 +39,49 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
-            #if UNITY_EDITOR
-            target.ForceMeshUpdate(false,true);
-            #endif
-            
             Cancel();
+            InitialSetup();
             var builder = LMotion.String.Create128Bytes(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
+                .WithOnComplete(() =>
+                {
+                    if (options.initializeOnComplete) Initialize();
+                })
+                .WithRichText(richText)
+
 #if UNITY_EDITOR
-                .WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
+                .WithScheduler(EditorMotionScheduler.Update);
 #endif
-                .WithRichText(richText);
+
 
             if (scrambleMode != ScrambleMode.Custom) builder.WithScrambleChars(scrambleMode);
             else builder.WithScrambleChars(scrambleChars);
-                
+
             Handle = builder.BindToText(target);
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.UIFeedbackColor;
         public TMP_Text Target => target;
+
+        public Color TagColor => FeedbackStyling.UIFeedbackColor;
+
+        public void Initialize()
+        {
+            target.text = initialText;
+        }
+
+        public void InitialSetup()
+        {
+            if (isInitialized) return;
+            initialText = target.text;
+            isInitialized = true;
+        }
     }
 }

@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.IMGUI.Controls;
-using UnityEngine.Rendering.Universal;
 
 namespace LMMCFeedbacks.Editor
 {
     public class FeedbackDropDown : AdvancedDropdown
     {
-        private readonly List<string> _feedbackList = new();
-        public event Action<AdvancedDropdownItem> OnSelect;
+        private readonly List<IFeedback> _feedbacks = new();
+        public event Action<Type> OnSelect;
         
         public FeedbackDropDown(AdvancedDropdownState state) : base(state)
         {
@@ -17,17 +16,18 @@ namespace LMMCFeedbacks.Editor
             foreach (var type in types)
             {
                 var instance = Activator.CreateInstance(type);
-                if (instance is IFeedback custom) _feedbackList.Add(custom.Name);
+                if (instance is IFeedback custom) _feedbacks.Add(custom);
             }
+            _feedbacks= _feedbacks.OrderByDescending(x => x.Name.Split('/').Length).ToList();
         }
 
         protected override AdvancedDropdownItem BuildRoot()
         {
             var root = new AdvancedDropdownItem("Root");
 
-            for( int i = 0; i < _feedbackList.Count; i++ )
+            for( int i = 0; i < _feedbacks.Count; i++ )
             {
-                var path = _feedbackList[i].Split('/');
+                var path = _feedbacks[i].Name.Split('/');
                 var parent = root;
 
                 foreach (var name in path)
@@ -52,7 +52,7 @@ namespace LMMCFeedbacks.Editor
         }
         protected override void ItemSelected(AdvancedDropdownItem item)
         {
-            OnSelect?.Invoke(item);
+            OnSelect?.Invoke(_feedbacks[item.id].GetType());
         }
     }
 }

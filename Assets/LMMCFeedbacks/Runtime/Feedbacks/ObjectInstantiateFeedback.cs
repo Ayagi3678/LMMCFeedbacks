@@ -4,6 +4,9 @@ using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Enums;
 using UnityEngine;
 using Object = UnityEngine.Object;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
@@ -12,9 +15,12 @@ namespace LMMCFeedbacks
         [SerializeField] private FeedbackOption options;
         [SerializeField] private GameObject prefab;
         [SerializeField] private bool setParent;
-        [SerializeField][DisplayIf(nameof(setParent))] private Transform parent;
-        [Space(5)]
-        [SerializeField] private TransformSpace positionSpace;
+
+        [SerializeField] [DisplayIf(nameof(setParent))]
+        private Transform parent;
+
+        [Space(5)] [SerializeField] private TransformSpace positionSpace;
+
         [SerializeField] private Vector3 initialPosition;
         [SerializeField] private TransformSpace rotationSpace;
         [SerializeField] private Vector3 initialEulerAngles;
@@ -26,12 +32,13 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if(Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
+
 
         public MotionHandle Create()
         {
-            if(Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
             Handle = LMotion.Create(0f, 0f, 0f)
                 .WithDelay(options.delayTime)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
@@ -49,6 +56,7 @@ namespace LMMCFeedbacks
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+
                     switch (rotationSpace)
                     {
                         case TransformSpace.World:
@@ -60,10 +68,11 @@ namespace LMMCFeedbacks
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+
                     if (setParent) instance.transform.SetParent(parent);
                 })
 #if UNITY_EDITOR
-                .WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
+                .WithScheduler(EditorMotionScheduler.Update)
 #endif
                 .RunWithoutBinding();
             return Handle;

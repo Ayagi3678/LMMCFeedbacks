@@ -1,7 +1,5 @@
-using System;
 using LitMotion;
 using LMMCFeedbacks.Runtime;
-using UnityEngine;
 
 public interface IFeedback
 {
@@ -13,6 +11,6 @@ public interface IFeedback
 
     public void Cancel()
     {
-        if(Handle.IsActive()) Handle.Cancel();
+        if (Handle.IsActive()) Handle.Cancel();
     }
 }

@@ -1,10 +1,13 @@
 ﻿using System;
 using LitMotion;
-
 using LMMCFeedbacks.Extensions;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
@@ -12,11 +15,18 @@ namespace LMMCFeedbacks
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Volume target;
-        
+
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
-        [SerializeField][Range(-100,100)] private float zero;
-        [SerializeField][Range(-100,100)] private float one;
+        [SerializeField] [Range(-100, 100)] private float zero;
+        [SerializeField] [Range(-100, 100)] private float one;
+
+        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))]
+        private float initialSaturation;
+
+        [HideInInspector] public bool isInitialized;
+
+        private ColorAdjustments _colorAdjustmentsCache;
 
         public bool IsActive { get; set; } = true;
 
@@ -26,28 +36,49 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
             Cancel();
-            Handle = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
+            InitialSetup();
+            if (_colorAdjustmentsCache == null)
+                _colorAdjustmentsCache = target.TryGetVolumeComponent<ColorAdjustments>();
+            _colorAdjustmentsCache.active = true;
+            var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
-                #if UNITY_EDITOR
-.WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
-#endif
-                .Bind(value =>
+                .WithOnComplete(() =>
                 {
-                    var colorAdjustments = target.TryGetVolumeComponent<UnityEngine.Rendering.Universal.ColorAdjustments>();
-                    colorAdjustments.EnableVolumeparameterAll();
-                    colorAdjustments.saturation.Override(value);
-                });
+                    if (options.initializeOnComplete) Initialize();
+                })
+
+#if UNITY_EDITOR
+                .WithScheduler(EditorMotionScheduler.Update);
+#endif
+
+
+            Handle = builder.BindWithState(_colorAdjustmentsCache,
+                (value, state) => { state.saturation.Override(value); });
             return Handle;
         }
 
         public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
+
+        public void Initialize()
+        {
+            if (_colorAdjustmentsCache != null) _colorAdjustmentsCache.saturation.Override(initialSaturation);
+        }
+
+        public void InitialSetup()
+        {
+            if (isInitialized) return;
+            if (_colorAdjustmentsCache == null)
+                _colorAdjustmentsCache = target.TryGetVolumeComponent<ColorAdjustments>();
+            initialSaturation = _colorAdjustmentsCache.saturation.value;
+            isInitialized = true;
+        }
     }
 }

@@ -1,9 +1,11 @@
 ﻿# if USE_CINEMACHINE
+#if UNITY_EDITOR
 using System;
-using LitMotion;
 using LitMotion.Editor;
+using LitMotion;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
+#endif
 
 namespace LMMCFeedbacks
 {
@@ -11,11 +13,16 @@ namespace LMMCFeedbacks
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Camera target;
-        
+
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
         [SerializeField] private float zero;
         [SerializeField] private float one;
+
+        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))]
+        private float initialFOV;
+
+        [HideInInspector] public bool isInitialized;
 
         public bool IsActive { get; set; } = true;
 
@@ -25,27 +32,46 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
             Cancel();
-            Handle = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
+            InitialSetup();
+            var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update)
-#endif
-                .Bind(value =>
+                .WithOnComplete(() =>
                 {
-                    target.orthographicSize = value;
-                });
+                    if (options.initializeOnComplete) Initialize();
+                })
+
+#if UNITY_EDITOR
+                .WithScheduler(EditorMotionScheduler.Update);
+#endif
+
+
+            Handle = builder.BindWithState(target, (value, state) => { state.orthographicSize = value; });
             return Handle;
         }
 
         public Color TagColor => FeedbackStyling.CameraFeedbackColor;
+
+        public void Initialize()
+        {
+            target.orthographicSize = initialFOV;
+        }
+
+        public void InitialSetup()
+        {
+            if (!isInitialized)
+            {
+                initialFOV = target.orthographicSize;
+                isInitialized = true;
+            }
+        }
     }
 }
 #endif

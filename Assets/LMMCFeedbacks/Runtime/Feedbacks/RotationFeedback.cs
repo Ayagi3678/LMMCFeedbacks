@@ -1,10 +1,12 @@
 ﻿using System;
 using LitMotion;
-
 using LitMotion.Extensions;
 using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Enums;
 using UnityEngine;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
@@ -14,10 +16,15 @@ namespace LMMCFeedbacks
         [SerializeField] private Transform target;
         [SerializeField] private TransformSpace space;
         [SerializeField] private bool isRelative;
-        [SerializeField] private float durationTime=1f;
+        [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
         [SerializeField] private Vector3 zero;
         [SerializeField] private Vector3 one;
+
+        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))]
+        private Vector3 initialEulerAngles;
+
+        [HideInInspector] public bool isInitialized;
 
         public bool IsActive { get; set; } = true;
 
@@ -27,38 +34,63 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
-            var initialRotation = space==TransformSpace.World?target.rotation:target.localRotation;
             Cancel();
-            Handle = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
+            InitialSetup();
+            var zeroRotation = space == TransformSpace.World ? target.eulerAngles : target.localEulerAngles;
+            var oneRotation = space == TransformSpace.World ? target.eulerAngles : target.localEulerAngles;
+            var builder = LMotion
+                .Create(isRelative ? zeroRotation + target.eulerAngles : zeroRotation,
+                    isRelative ? oneRotation + target.eulerAngles : oneRotation, durationTime)
+                .WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
-                .WithLoops(options.loop?options.loopCount:1, options.loopType)
+                .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
-                #if UNITY_EDITOR
-.WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
-#endif
-                .Bind(value =>
+                .WithOnComplete(() =>
                 {
-                    switch (space)
-                    {
-                        case TransformSpace.World:
-                            target.rotation = isRelative?Quaternion.Euler(value)*target.rotation:Quaternion.Euler(value);
-                            break;
-                        case TransformSpace.Local:
-                            target.localRotation = isRelative?Quaternion.Euler(value)*target.localRotation:Quaternion.Euler(value);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                    
-                });
+                    if (options.initializeOnComplete) Initialize();
+                })
+
+#if UNITY_EDITOR
+                .WithScheduler(EditorMotionScheduler.Update);
+#endif
+
+
+            Handle = space switch
+            {
+                TransformSpace.World => builder.BindToEulerAngles(target),
+                TransformSpace.Local => builder.BindToLocalEulerAngles(target),
+                _ => throw new ArgumentOutOfRangeException()
+            };
             return Handle;
         }
 
         public Color TagColor => FeedbackStyling.TransformFeedbackColor;
+
+        public void Initialize()
+        {
+            switch (space)
+            {
+                case TransformSpace.World:
+                    target.eulerAngles = initialEulerAngles;
+                    break;
+                case TransformSpace.Local:
+                    target.localEulerAngles = initialEulerAngles;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public void InitialSetup()
+        {
+            if (isInitialized) return;
+            initialEulerAngles = space == TransformSpace.World ? target.eulerAngles : target.localEulerAngles;
+            isInitialized = true;
+        }
     }
 }

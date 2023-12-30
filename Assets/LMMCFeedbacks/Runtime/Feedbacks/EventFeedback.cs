@@ -1,9 +1,11 @@
 ﻿using System;
 using LitMotion;
-using LitMotion.Editor;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
 using UnityEngine.Events;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
@@ -21,21 +23,19 @@ namespace LMMCFeedbacks
         public void Cancel()
         {
             onStop?.Invoke();
-            if(Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
+
 
         public MotionHandle Create()
         {
-            if(Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
             Handle = LMotion.Create(0f, 0f, 0f)
                 .WithDelay(options.delayTime)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                .WithOnComplete(() =>
-                {
-                    onPlay?.Invoke();
-                })
+                .WithOnComplete(() => { onPlay?.Invoke(); })
 #if UNITY_EDITOR
-                .WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
+                .WithScheduler(EditorMotionScheduler.Update)
 #endif
                 .RunWithoutBinding();
             return Handle;

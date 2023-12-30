@@ -1,8 +1,11 @@
 ﻿using System;
 using LitMotion;
-using LitMotion.Editor;
+using LitMotion.Extensions;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
@@ -10,11 +13,16 @@ namespace LMMCFeedbacks
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private AudioSource target;
-        
+
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
         [SerializeField] private float zero;
         [SerializeField] private float one;
+
+        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))]
+        private float initialVolume;
+
+        [HideInInspector] public bool isInitialized;
 
         public bool IsActive { get; set; } = true;
 
@@ -24,26 +32,45 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
             Cancel();
-            Handle = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
+            InitialSetup();
+            var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update)
-#endif
-                .Bind(value =>
+                .WithOnComplete(() =>
                 {
-                    target.volume = value;
-                });
+                    if (options.initializeOnComplete) Initialize();
+                })
+
+#if UNITY_EDITOR
+                .WithScheduler(EditorMotionScheduler.Update);
+#endif
+
+
+            builder.BindToVolume(target);
             return Handle;
         }
 
         public Color TagColor => FeedbackStyling.AudioFeedbackColor;
+
+        public void Initialize()
+        {
+            target.volume = initialVolume;
+        }
+
+        public void InitialSetup()
+        {
+            if (!isInitialized)
+            {
+                initialVolume = target.volume;
+                isInitialized = true;
+            }
+        }
     }
 }

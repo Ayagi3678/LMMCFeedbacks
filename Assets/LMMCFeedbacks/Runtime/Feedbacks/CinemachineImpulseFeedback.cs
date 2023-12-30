@@ -1,22 +1,32 @@
 ﻿#if USE_CINEMACHINE
+#if UNITY_EDITOR
 using System;
 using Cinemachine;
-using LitMotion;
 using LitMotion.Editor;
+using LitMotion;
 using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Enums;
 using UnityEngine;
+using Random = UnityEngine.Random;
+#endif
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class CinemachineImpulseFeedback : IFeedback, IFeedbackTagColor ,IFeedbackSceneRepaint,IFeedbackWaringMessageBox
+    [Serializable] public class CinemachineImpulseFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint,
+        IFeedbackWaringMessageBox
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private CinemachineImpulseReferenceMode referenceMode;
         [SerializeField] private bool velocityRandom = true;
-        [SerializeField] [DisplayIf(nameof(velocityRandom),false)] private Vector3 velocity;
-        [SerializeField] [DisplayIf(nameof(referenceMode),0)] private CinemachineImpulseSource impulseSource;
-        [SerializeField] [DisplayIf(nameof(referenceMode),1)] [NoCopy]private CinemachineImpulseDefinition impulseDefinition = new();
+
+        [SerializeField] [DisplayIf(nameof(velocityRandom), false)]
+        private Vector3 velocity;
+
+        [SerializeField] [DisplayIf(nameof(referenceMode), 0)]
+        private CinemachineImpulseSource impulseSource;
+
+        [SerializeField] [DisplayIf(nameof(referenceMode), 1)] [NoCopy]
+        private CinemachineImpulseDefinition impulseDefinition = new();
 
         public bool IsActive { get; set; } = true;
 
@@ -26,8 +36,9 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
+
 
         public MotionHandle Create()
         {
@@ -38,7 +49,7 @@ namespace LMMCFeedbacks
                 .WithOnComplete(() =>
                 {
                     CinemachineImpulseManager.Instance.IgnoreTimeScale = options.ignoreTimeScale;
-                    if(velocityRandom) velocity = UnityEngine.Random.insideUnitSphere;
+                    if (velocityRandom) velocity = Random.insideUnitSphere;
                     switch (referenceMode)
                     {
                         case CinemachineImpulseReferenceMode.ImpulseSource:

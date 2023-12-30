@@ -2,6 +2,9 @@
 using LitMotion;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
@@ -9,7 +12,7 @@ namespace LMMCFeedbacks
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private ParticleSystem target;
-        
+
         public bool IsActive { get; set; } = true;
 
         public string Name => "Particle System/Play (Particle System)";
@@ -18,21 +21,19 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if(Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
+
 
         public MotionHandle Create()
         {
-            if(Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
             Handle = LMotion.Create(0f, 0f, 0f)
                 .WithDelay(options.delayTime)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                .WithOnComplete(() =>
-                {
-                    target.Play();
-                })
+                .WithOnComplete(() => { target.Play(); })
 #if UNITY_EDITOR
-                .WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
+                .WithScheduler(EditorMotionScheduler.Update)
 #endif
                 .RunWithoutBinding();
             return Handle;

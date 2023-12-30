@@ -13,16 +13,17 @@ namespace LMMCFeedbacks
         public FeedbackPlayMode playMode;
         public bool loop;
         [Min(1)] public int loopCount = 1;
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
-        [SerializeReference]public List<IFeedback> Feedbacks = new ();
-
-        public readonly Action OnCompleted;
 
         private readonly List<UniTask> _feedbackTaskCaches = new();
 
+        public readonly Action OnCompleted;
+
+        // ReSharper disable once FieldCanBeMadeReadOnly.Global
+        [SerializeReference] public List<IFeedback> Feedbacks = new();
+
         private void Start()
         {
-            if(playOnAwake) Play();
+            if (playOnAwake) Play();
         }
 
         private void OnDestroy()
@@ -44,39 +45,48 @@ namespace LMMCFeedbacks
                     throw new ArgumentOutOfRangeException();
             }
         }
+
         public void Stop()
         {
+            foreach (var feedback in Feedbacks) feedback.Cancel();
+        }
+
+        public void Initialize()
+        {
+            Stop();
             foreach (var feedback in Feedbacks)
-            {
-                feedback.Cancel();
-            }
+                if (feedback is IFeedbackInitializable initializable)
+                    initializable.Initialize();
         }
 
         public async UniTask PlayConcurrent()
         {
-            for (int i = 0; i < (loop?loopCount:1); i++)
+            for (var i = 0; i < (loop ? loopCount : 1); i++)
             {
                 _feedbackTaskCaches.Clear();
                 foreach (var feedback in Feedbacks)
                 {
-                    if(!feedback.IsActive) continue;
-                    if(feedback is not IFeedbackHold) _feedbackTaskCaches.Add(feedback.Create().ToUniTask(destroyCancellationToken));
+                    if (!feedback.IsActive) continue;
+                    if (feedback is not IFeedbackHold)
+                        _feedbackTaskCaches.Add(feedback.Create().ToUniTask(destroyCancellationToken));
                     else await feedback.Create().ToUniTask(destroyCancellationToken);
                 }
+
                 await UniTask.WhenAll(_feedbackTaskCaches);
             }
+
             OnCompleted?.Invoke();
         }
+
         public async UniTask PlaySequential()
         {
-            for (int i = 0; i < (loop?loopCount:1); i++)
-            {
+            for (var i = 0; i < (loop ? loopCount : 1); i++)
                 foreach (var feedback in Feedbacks)
                 {
-                    if(!feedback.IsActive) continue;
+                    if (!feedback.IsActive) continue;
                     await feedback.Create().ToUniTask(destroyCancellationToken);
                 }
-            }
+
             OnCompleted?.Invoke();
         }
     }

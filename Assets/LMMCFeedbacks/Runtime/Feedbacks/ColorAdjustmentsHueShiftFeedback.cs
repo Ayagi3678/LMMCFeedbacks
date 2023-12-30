@@ -1,22 +1,32 @@
 ﻿using System;
 using LitMotion;
-
 using LMMCFeedbacks.Extensions;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+#if UNITY_EDITOR
+using LitMotion.Editor;
+#endif
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class ColorAdjustmentsHueShiftFeedback : IFeedback, IFeedbackTagColor , IFeedbackSceneRepaint
+    [Serializable] public class ColorAdjustmentsHueShiftFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Volume target;
-        
+
         [SerializeField] private float durationTime = 1f;
         [SerializeField] private Ease ease;
-        [SerializeField][Range(-180,180)] private float zero;
-        [SerializeField][Range(-180,180)] private float one;
+        [SerializeField] [Range(-180, 180)] private float zero;
+        [SerializeField] [Range(-180, 180)] private float one;
+
+        [Space(10)] [SerializeField] [DisableIf(nameof(isInitialized))]
+        private float initialHueShift;
+
+        [HideInInspector] public bool isInitialized;
+
+        private ColorAdjustments _colorAdjustmentsCache;
 
         public bool IsActive { get; set; } = true;
 
@@ -26,28 +36,48 @@ namespace LMMCFeedbacks
 
         public void Cancel()
         {
-            if (Handle.IsActive()) Handle.Cancel();
+            if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
             Cancel();
-            Handle = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
+            InitialSetup();
+            if (_colorAdjustmentsCache == null)
+                _colorAdjustmentsCache = target.TryGetVolumeComponent<ColorAdjustments>();
+            _colorAdjustmentsCache.active = true;
+            var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
-                #if UNITY_EDITOR
-.WithScheduler(LitMotion.Editor.EditorMotionScheduler.Update)
-#endif
-                .Bind(value =>
+                .WithOnComplete(() =>
                 {
-                    var colorAdjustments = target.TryGetVolumeComponent<UnityEngine.Rendering.Universal.ColorAdjustments>();
-                    colorAdjustments.EnableVolumeparameterAll();
-                    colorAdjustments.hueShift.Override(value);
-                });
+                    if (options.initializeOnComplete) Initialize();
+                })
+
+#if UNITY_EDITOR
+                .WithScheduler(EditorMotionScheduler.Update);
+#endif
+
+            Handle = builder.BindWithState(_colorAdjustmentsCache,
+                (value, state) => { state.hueShift.Override(value); });
             return Handle;
         }
 
         public Color TagColor => FeedbackStyling.VolumeFeedbackColor;
+
+        public void Initialize()
+        {
+            if (_colorAdjustmentsCache != null) _colorAdjustmentsCache.hueShift.Override(initialHueShift);
+        }
+
+        public void InitialSetup()
+        {
+            if (isInitialized) return;
+            if (_colorAdjustmentsCache == null)
+                _colorAdjustmentsCache = target.TryGetVolumeComponent<ColorAdjustments>();
+            initialHueShift = _colorAdjustmentsCache.hueShift.value;
+            isInitialized = true;
+        }
     }
 }
