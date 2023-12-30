@@ -11,7 +11,7 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class VignetteIntensityFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint
+    [Serializable] public class VignetteIntensityFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Volume target;

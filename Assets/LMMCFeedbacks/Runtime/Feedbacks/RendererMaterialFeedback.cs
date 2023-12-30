@@ -10,7 +10,7 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class RendererMaterialFeedback : IFeedback, IFeedbackTagColor
+    [Serializable] public class RendererMaterialFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Renderer target;

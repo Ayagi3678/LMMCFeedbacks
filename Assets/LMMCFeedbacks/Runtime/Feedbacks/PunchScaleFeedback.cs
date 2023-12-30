@@ -9,7 +9,7 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class PunchScaleFeedback : IFeedback, IFeedbackTagColor
+    [Serializable] public class PunchScaleFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Transform target;

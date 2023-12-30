@@ -8,7 +8,7 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class CameraFOVFeedback : IFeedback, IFeedbackTagColor
+    [Serializable] public class CameraFOVFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Camera target;

@@ -10,7 +10,7 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class ShakeRotationFeedback : IFeedback, IFeedbackTagColor
+    [Serializable] public class ShakeRotationFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Transform target;

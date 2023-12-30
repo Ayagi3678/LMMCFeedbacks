@@ -9,7 +9,7 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class ImageFillAmountFeedback : IFeedback, IFeedbackTagColor
+    [Serializable] public class ImageFillAmountFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Image target;

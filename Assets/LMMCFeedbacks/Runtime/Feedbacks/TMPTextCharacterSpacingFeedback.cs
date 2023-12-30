@@ -10,7 +10,7 @@ using LitMotion.Editor;
 namespace LMMCFeedbacks
 {
     [Serializable] public class TMPTextCharacterSpacingFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint,
-        IFeedbackForceMeshUpdate
+        IFeedbackForceMeshUpdate, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private TMP_Text target;

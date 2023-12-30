@@ -12,7 +12,7 @@ using LitMotion.Editor;
 namespace LMMCFeedbacks
 {
     [Serializable]
-    public class ChromaticAberrationIntensityFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint
+    public class ChromaticAberrationIntensityFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint,IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private Volume target;

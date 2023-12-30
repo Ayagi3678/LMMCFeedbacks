@@ -8,7 +8,7 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class CanvasGroupAlphaFeedback : IFeedback, IFeedbackTagColor
+    [Serializable] public class CanvasGroupAlphaFeedback : IFeedback, IFeedbackTagColor , IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private CanvasGroup target;

@@ -11,7 +11,7 @@ using LitMotion.Editor;
 namespace LMMCFeedbacks
 {
     [Serializable]
-    public class TMPTextFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackForceMeshUpdate
+    public class TMPTextFeedback : IFeedback, IFeedbackTagColor, IFeedbackSceneRepaint, IFeedbackForceMeshUpdate, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private TMP_Text target;

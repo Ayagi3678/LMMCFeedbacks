@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class CinemachineVirtualCameraFOVFeedback : IFeedback, IFeedbackTagColor
+    [Serializable] public class CinemachineVirtualCameraFOVFeedback : IFeedback, IFeedbackTagColor, IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private CinemachineVirtualCamera target;

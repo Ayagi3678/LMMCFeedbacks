@@ -9,7 +9,7 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class AudioSourceVolumeFeedback : IFeedback, IFeedbackTagColor
+    [Serializable] public class AudioSourceVolumeFeedback : IFeedback, IFeedbackTagColor ,IFeedbackInitializable
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private AudioSource target;
