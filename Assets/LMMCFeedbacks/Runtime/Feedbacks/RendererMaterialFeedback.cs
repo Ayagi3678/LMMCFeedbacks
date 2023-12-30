@@ -169,8 +169,6 @@ namespace LMMCFeedbacks
             return Handle;
         }
 
-        public Color TagColor => FeedbackStyling.RendererFeedbackColor;
-
         public void Initialize()
         {
             switch (propertyType)
@@ -198,6 +196,7 @@ namespace LMMCFeedbacks
         public void InitialSetup()
         {
             if (isInitialized) return;
+            if (IsMaterialCacheNull) _materialCache = target.material;
             switch (propertyType)
             {
                 case TweenMaterialPropertyType.Float:
@@ -221,5 +220,7 @@ namespace LMMCFeedbacks
 
             isInitialized = true;
         }
+
+        public Color TagColor => FeedbackStyling.RendererFeedbackColor;
     }
 }

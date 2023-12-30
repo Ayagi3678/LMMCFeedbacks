@@ -48,11 +48,6 @@ namespace LMMCFeedbacks.Editor
             EditorGUI.EndDisabledGroup();
         }
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return EditorGUI.GetPropertyHeight(property, true);
-        }
-
         private SerializedProperty FindPathProperty(SerializedProperty property, DisableIfAttribute attr)
         {
             var path = property.propertyPath.Split('[', ']');
