@@ -57,7 +57,7 @@ namespace LMMCFeedbacks
         public void Stop()
         {
             _playCancellationTokenSource?.Cancel();
-            foreach (var feedback in Feedbacks) feedback.Cancel();
+            foreach (var feedback in Feedbacks) feedback.Complete();
         }
 
         public void Initialize()

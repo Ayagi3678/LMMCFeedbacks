@@ -8,7 +8,7 @@ using LitMotion.Editor;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class HoldFeedback : IFeedback, IFeedbackTagColor, IFeedbackHold
+    [Serializable] public class HoldFeedback : IFeedback, IFeedbackTagColor, IFeedbackHold, IFeedbackNoPlayButton
     {
         [SerializeField] private FeedbackOption options;
         [SerializeField] private float holdTime = 1f;
@@ -18,7 +18,7 @@ namespace LMMCFeedbacks
         public FeedbackOption Options => options;
         public MotionHandle Handle { get; private set; }
 
-        public void Cancel()
+        public void Complete()
         {
             if (Handle.IsActive()) Handle.Complete();
         }

@@ -34,7 +34,7 @@ namespace LMMCFeedbacks
         public FeedbackOption Options => options;
         public MotionHandle Handle { get; private set; }
 
-        public void Cancel()
+        public void Complete()
         {
             if (Handle.IsActive()) Handle.Complete();
         }
@@ -42,7 +42,7 @@ namespace LMMCFeedbacks
 
         public MotionHandle Create()
         {
-            Cancel();
+            Complete();
             Handle = LMotion.Create(0, 0, 0).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)

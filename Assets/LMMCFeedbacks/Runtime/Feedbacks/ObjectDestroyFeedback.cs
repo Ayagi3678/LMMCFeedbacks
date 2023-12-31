@@ -20,7 +20,7 @@ namespace LMMCFeedbacks
         public FeedbackOption Options => options;
         public MotionHandle Handle { get; private set; }
 
-        public void Cancel()
+        public void Complete()
         {
             if (Handle.IsActive()) Handle.Complete();
         }

@@ -9,8 +9,5 @@ public interface IFeedback
     public MotionHandle Handle { get; }
     public MotionHandle Create();
 
-    public void Cancel()
-    {
-        if (Handle.IsActive()) Handle.Cancel();
-    }
+    public void Complete();
 }

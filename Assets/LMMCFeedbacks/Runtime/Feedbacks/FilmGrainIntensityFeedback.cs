@@ -35,14 +35,14 @@ namespace LMMCFeedbacks
         public FeedbackOption Options => options;
         public MotionHandle Handle { get; private set; }
 
-        public void Cancel()
+        public void Complete()
         {
             if (Handle.IsActive()) Handle.Complete();
         }
 
         public MotionHandle Create()
         {
-            Cancel();
+            Complete();
             if (!isInitialized) InitialSetup();
             if (_filmGrainCache == null)
                 _filmGrainCache = FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<FilmGrain>();
