@@ -6,8 +6,18 @@ namespace LMMCFeedbacks.Runtime.Managers
     public class FeedbackSoundManager : MonoBehaviour
     {
         private static FeedbackSoundManager _instance;
+        private AudioSource _audioSource;
 
-        public AudioSource AudioSource { get; private set; }
+        public AudioSource AudioSource
+        {
+            get
+            {
+                if (_audioSource != null) return _audioSource;
+                _audioSource = GetComponent<AudioSource>();
+                return _audioSource;
+            }
+            private set => _audioSource = value;
+        }
 
         public static FeedbackSoundManager Instance
         {
@@ -29,9 +39,9 @@ namespace LMMCFeedbacks.Runtime.Managers
             }
         }
 
-        private void Reset()
+        private void Awake()
         {
-            if (Initialize()) AudioSource = GetComponent<AudioSource>();
+            Initialize();
         }
 
         public void PlaySound(AudioClip clip, float volumeScale = 1f)
