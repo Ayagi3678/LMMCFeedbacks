@@ -6,27 +6,28 @@ namespace LMMCFeedbacks.Runtime.Managers
     public class FeedbackSoundManager : MonoBehaviour
     {
         private static FeedbackSoundManager _instance;
+        private AudioSource _audioSource;
 
-        public AudioSource AudioSource { get; private set; }
+        public AudioSource AudioSource
+        {
+            get
+            {
+                if (_audioSource != null) return _audioSource;
+                _audioSource = GetComponent<AudioSource>();
+                return _audioSource;
+            }
+            private set => _audioSource = value;
+        }
 
         public static FeedbackSoundManager Instance
         {
             get
             {
-                if (_instance != null)
-                {
-                    _instance.Setup();
-                    return _instance;
-                }
-
+                if (_instance != null) return _instance;
                 var type = typeof(FeedbackSoundManager);
 
                 _instance = (FeedbackSoundManager)FindObjectOfType(type);
-                if (_instance != null)
-                {
-                    _instance.Setup();
-                    return _instance;
-                }
+                if (_instance != null) return _instance;
 
                 var gameObject = new GameObject("FeedbackSoundManager", type);
                 _instance = gameObject.GetComponent<FeedbackSoundManager>();
@@ -34,7 +35,6 @@ namespace LMMCFeedbacks.Runtime.Managers
                 if (_instance == null)
                     Debug.LogError("Problem during the creation of FeedbackSoundManager", gameObject);
 
-                _instance.Setup();
                 return _instance;
             }
         }
@@ -52,11 +52,6 @@ namespace LMMCFeedbacks.Runtime.Managers
         public void StopSound()
         {
             AudioSource.Stop();
-        }
-
-        public void Setup()
-        {
-            if (AudioSource == null) AudioSource = GetComponent<AudioSource>();
         }
 
         public bool Initialize()
