@@ -42,6 +42,12 @@ namespace LMMCFeedbacks.Runtime.Managers
         private void Awake()
         {
             Initialize();
+            gameObject.hideFlags = HideFlags.HideAndDontSave;
+        }
+
+        private void Reset()
+        {
+            gameObject.hideFlags = HideFlags.HideAndDontSave;
         }
 
         public void PlaySound(AudioClip clip, float volumeScale = 1f)
