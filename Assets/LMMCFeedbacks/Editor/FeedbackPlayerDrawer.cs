@@ -112,7 +112,7 @@ namespace LMMCFeedbacks.Editor
                     propertyRect.y += EditorGUI.GetPropertyHeight(element) + 2;
                 }
 
-                if (_feedbacks[index] is IFeedbackNoPlayButton) return;
+                if (feedback is IFeedbackNoPlayButton) return;
                 propertyRect.y += 5;
                 propertyRect.height = EditorGUIUtility.singleLineHeight;
                 var playButtonRect = propertyRect;

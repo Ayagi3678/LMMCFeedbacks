@@ -1,26 +1,26 @@
 ﻿using System;
 using LitMotion;
-using LMMCFeedbacks.Runtime;
-using UnityEngine;
-#if UNITY_EDITOR
 using LitMotion.Editor;
-#endif
+using LMMCFeedbacks.Runtime;
+using LMMCFeedbacks.Runtime.Managers;
+using UnityEngine;
 
 namespace LMMCFeedbacks
 {
-    [Serializable] public class AudioSourceStopFeedback : IFeedback, IFeedbackTagColor
+    [Serializable] public class SoundFeedback : IFeedback, IFeedbackTagColor
     {
         [SerializeField] private FeedbackOption options;
-        [SerializeField] private AudioSource target;
-
+        [SerializeField] private AudioClip clip;
+        [SerializeField] private float volumeScale = 1f;
         public bool IsActive { get; set; } = true;
 
-        public string Name => "Audio/Audio Source/Stop (Audio Source)";
+        public string Name => "Audio/Sound";
         public FeedbackOption Options => options;
         public MotionHandle Handle { get; private set; }
 
         public void Complete()
         {
+            FeedbackSoundManager.Instance.StopSound();
             if (Handle.IsActive()) Handle.Complete();
         }
 
@@ -31,7 +31,7 @@ namespace LMMCFeedbacks
             Handle = LMotion.Create(0f, 0f, 0f)
                 .WithDelay(options.delayTime)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                .WithOnComplete(() => { target.Stop(); })
+                .WithOnComplete(() => { FeedbackSoundManager.Instance.PlaySound(clip, volumeScale); })
 #if UNITY_EDITOR
                 .WithScheduler(EditorMotionScheduler.Update)
 #endif

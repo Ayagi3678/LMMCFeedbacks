@@ -26,7 +26,7 @@ namespace LMMCFeedbacks
 
         public bool IsActive { get; set; } = true;
 
-        public string Name => "Sound/Audio Source/Pitch (Audio Source)";
+        public string Name => "Audio/Audio Source/Pitch (Audio Source)";
         public FeedbackOption Options => options;
         public MotionHandle Handle { get; private set; }
 
