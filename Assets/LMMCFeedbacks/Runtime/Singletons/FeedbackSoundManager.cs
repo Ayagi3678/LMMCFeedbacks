@@ -64,7 +64,7 @@ namespace LMMCFeedbacks.Runtime.Managers
 
             if (Instance == this) return true;
 
-            Destroy(this);
+            DestroyImmediate(this);
             return false;
         }
     }
