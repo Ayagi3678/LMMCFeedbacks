@@ -20,7 +20,6 @@ namespace LMMCFeedbacks
 
         public void Complete()
         {
-            FeedbackSoundManager.Instance.StopSound();
             if (Handle.IsActive()) Handle.Complete();
         }
 
@@ -31,7 +30,10 @@ namespace LMMCFeedbacks
             Handle = LMotion.Create(0f, 0f, 0f)
                 .WithDelay(options.delayTime)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                .WithOnComplete(() => { FeedbackSoundManager.Instance.PlaySound(clip, volumeScale); })
+                .WithOnComplete(() =>
+                {
+                    FeedbackSoundManager.Instance.PlaySound(clip, volumeScale);
+                })
 #if UNITY_EDITOR
                 .WithScheduler(EditorMotionScheduler.Update)
 #endif
