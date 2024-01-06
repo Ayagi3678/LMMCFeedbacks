@@ -76,7 +76,6 @@ namespace LMMCFeedbacks.Editor
             {
                 feedback.Complete();
                 _feedbacks.RemoveAt(index);
-                serializedObject.ApplyModifiedProperties();
             }
 
             if (menuButton)
@@ -169,7 +168,11 @@ namespace LMMCFeedbacks.Editor
             rect.y += EditorGUI.GetPropertyHeight(playOnAwake);
             rect.y += EditorGUI.GetPropertyHeight(options);
             rect.y += _reorderableList.GetHeight();
-            if (EditorGUI.EndChangeCheck()) serializedObject.ApplyModifiedProperties();
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(serializedObject.targetObject);
+            }
 
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Add Feedback", new GUIStyle("MiniPullDown"),
