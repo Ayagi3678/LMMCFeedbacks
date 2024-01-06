@@ -76,6 +76,7 @@ namespace LMMCFeedbacks.Editor
             {
                 feedback.Complete();
                 _feedbacks.RemoveAt(index);
+                serializedObject.ApplyModifiedProperties();
             }
 
             if (menuButton)
