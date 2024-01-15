@@ -2,7 +2,6 @@
 #if UNITY_EDITOR
 using System;
 using Cinemachine;
-using LitMotion.Editor;
 using LitMotion;
 using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Enums;
@@ -43,7 +42,7 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             Complete();
-            Handle = LMotion.Create(0, 0, 0).WithDelay(options.delayTime)
+            var builder = LMotion.Create(0, 0, 0).WithDelay(options.delayTime)
                 .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithOnComplete(() =>
@@ -62,11 +61,9 @@ namespace LMMCFeedbacks
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                })
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update)
-#endif
-                .RunWithoutBinding();
+                });
+
+            Handle = builder.RunWithoutBinding();
             return Handle;
         }
 

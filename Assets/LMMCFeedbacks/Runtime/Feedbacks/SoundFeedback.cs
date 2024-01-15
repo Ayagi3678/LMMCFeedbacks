@@ -1,6 +1,5 @@
 ﻿using System;
 using LitMotion;
-using LitMotion.Editor;
 using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Managers;
 using UnityEngine;
@@ -27,17 +26,12 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             if (Handle.IsActive()) Handle.Complete();
-            Handle = LMotion.Create(0f, 0f, 0f)
+            var builder = LMotion.Create(0f, 0f, 0f)
                 .WithDelay(options.delayTime)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                .WithOnComplete(() =>
-                {
-                    FeedbackSoundManager.Instance.PlaySound(clip, volumeScale);
-                })
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update)
-#endif
-                .RunWithoutBinding();
+                .WithOnComplete(() => { FeedbackSoundManager.Instance.PlaySound(clip, volumeScale); });
+
+            Handle = builder.RunWithoutBinding();
             return Handle;
         }
 

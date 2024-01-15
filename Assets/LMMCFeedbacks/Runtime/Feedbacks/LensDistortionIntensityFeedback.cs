@@ -5,9 +5,6 @@ using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Managers;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-#if UNITY_EDITOR
-using LitMotion.Editor;
-#endif
 
 namespace LMMCFeedbacks
 {
@@ -53,11 +50,7 @@ namespace LMMCFeedbacks
                 .WithOnComplete(() =>
                 {
                     if (options.initializeOnComplete) Initialize();
-                })
-
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update);
-#endif
+                });
 
 
             Handle = builder.BindWithState(_lensDistortionCache,

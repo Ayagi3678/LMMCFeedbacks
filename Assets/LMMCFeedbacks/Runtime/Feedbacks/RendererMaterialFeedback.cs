@@ -1,6 +1,5 @@
 ﻿using System;
 using LitMotion;
-using LitMotion.Extensions;
 using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Enums;
 using UnityEngine;
@@ -85,86 +84,61 @@ namespace LMMCFeedbacks
             Complete();
             if (!isInitialized) InitialSetup();
             if (IsMaterialCacheNull) _materialCache = target.material;
-            switch (propertyType)
+            Handle = propertyType switch
             {
-                case TweenMaterialPropertyType.Float:
-                    Handle = LMotion.Create(floatZero, floatOne, durationTime).WithDelay(options.delayTime)
-                        .WithIgnoreTimeScale(options.ignoreTimeScale)
-                        .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                        .WithEase(ease)
-                        .WithOnComplete(() =>
-                        {
-                            if (options.initializeOnComplete) Initialize();
-                        })
-
-#if UNITY_EDITOR
-                        .WithScheduler(EditorMotionScheduler.Update)
-#endif
-                        .BindToMaterialFloat(_materialCache, propertyName);
-                    break;
-                case TweenMaterialPropertyType.Int:
-                    Handle = LMotion.Create(intZero, intOne, durationTime).WithDelay(options.delayTime)
-                        .WithIgnoreTimeScale(options.ignoreTimeScale)
-                        .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                        .WithEase(ease)
-                        .WithOnComplete(() =>
-                        {
-                            if (options.initializeOnComplete) Initialize();
-                        })
-
-#if UNITY_EDITOR
-                        .WithScheduler(EditorMotionScheduler.Update)
-#endif
-                        .BindToMaterialInt(_materialCache, propertyName);
-                    break;
-                case TweenMaterialPropertyType.Color:
-                    Handle = LMotion.Create(colorZero, colorOne, durationTime).WithDelay(options.delayTime)
-                        .WithIgnoreTimeScale(options.ignoreTimeScale)
-                        .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                        .WithEase(ease)
-                        .WithOnComplete(() =>
-                        {
-                            if (options.initializeOnComplete) Initialize();
-                        })
-
-#if UNITY_EDITOR
-                        .WithScheduler(EditorMotionScheduler.Update)
-#endif
-                        .BindToMaterialColor(_materialCache, propertyName);
-                    break;
-                case TweenMaterialPropertyType.Vector2:
-                    Handle = LMotion.Create(vector2Zero, vector2One, durationTime).WithDelay(options.delayTime)
-                        .WithIgnoreTimeScale(options.ignoreTimeScale)
-                        .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                        .WithEase(ease)
-                        .WithOnComplete(() =>
-                        {
-                            if (options.initializeOnComplete) Initialize();
-                        })
-
-#if UNITY_EDITOR
-                        .WithScheduler(EditorMotionScheduler.Update)
-#endif
-                        .Bind(value => { _materialCache.SetVector(propertyName, value); });
-                    break;
-                case TweenMaterialPropertyType.Vector3:
-                    Handle = LMotion.Create(vector3Zero, vector3One, durationTime).WithDelay(options.delayTime)
-                        .WithIgnoreTimeScale(options.ignoreTimeScale)
-                        .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-                        .WithEase(ease)
-                        .WithOnComplete(() =>
-                        {
-                            if (options.initializeOnComplete) Initialize();
-                        })
-
-#if UNITY_EDITOR
-                        .WithScheduler(EditorMotionScheduler.Update)
-#endif
-                        .Bind(value => { _materialCache.SetVector(propertyName, value); });
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                TweenMaterialPropertyType.Float => LMotion.Create(floatZero, floatOne, durationTime)
+                    .WithDelay(options.delayTime)
+                    .WithIgnoreTimeScale(options.ignoreTimeScale)
+                    .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
+                    .WithEase(ease)
+                    .WithOnComplete(() =>
+                    {
+                        if (options.initializeOnComplete) Initialize();
+                    })
+                    .BindWithState(_materialCache, (value, state) => { state.SetFloat(propertyName, value); }),
+                TweenMaterialPropertyType.Int => LMotion.Create(intZero, intOne, durationTime)
+                    .WithDelay(options.delayTime)
+                    .WithIgnoreTimeScale(options.ignoreTimeScale)
+                    .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
+                    .WithEase(ease)
+                    .WithOnComplete(() =>
+                    {
+                        if (options.initializeOnComplete) Initialize();
+                    })
+                    .BindWithState(_materialCache, (value, state) => { state.SetInt(propertyName, value); }),
+                TweenMaterialPropertyType.Color => LMotion.Create(colorZero, colorOne, durationTime)
+                    .WithDelay(options.delayTime)
+                    .WithIgnoreTimeScale(options.ignoreTimeScale)
+                    .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
+                    .WithEase(ease)
+                    .WithOnComplete(() =>
+                    {
+                        if (options.initializeOnComplete) Initialize();
+                    })
+                    .BindWithState(_materialCache, (value, state) => { state.SetColor(propertyName, value); }),
+                TweenMaterialPropertyType.Vector2 => LMotion.Create(vector2Zero, vector2One, durationTime)
+                    .WithDelay(options.delayTime)
+                    .WithIgnoreTimeScale(options.ignoreTimeScale)
+                    .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
+                    .WithEase(ease)
+                    .WithOnComplete(() =>
+                    {
+                        if (options.initializeOnComplete) Initialize();
+                    })
+                    .BindWithState(_materialCache, (value, state) => { state.SetVector(propertyName, value); }),
+                TweenMaterialPropertyType.Vector3 => LMotion.Create(vector3Zero, vector3One, durationTime)
+                    .WithDelay(options.delayTime)
+                    .WithIgnoreTimeScale(options.ignoreTimeScale)
+                    .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
+                    .WithEase(ease)
+                    .WithOnComplete(() =>
+                    {
+                        if (options.initializeOnComplete) Initialize();
+                    })
+                    .WithScheduler(EditorMotionScheduler.Update)
+                    .BindWithState(_materialCache, (value, state) => { state.SetVector(propertyName, value); }),
+                _ => throw new ArgumentOutOfRangeException()
+            };
 
             return Handle;
         }

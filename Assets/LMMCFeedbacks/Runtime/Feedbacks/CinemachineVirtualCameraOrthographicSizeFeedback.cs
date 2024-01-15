@@ -1,7 +1,6 @@
 ﻿# if USE_CINEMACHINE
 #if UNITY_EDITOR
 using System;
-using LitMotion.Editor;
 using LitMotion;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
@@ -47,11 +46,7 @@ namespace LMMCFeedbacks
                 .WithOnComplete(() =>
                 {
                     if (options.initializeOnComplete) Initialize();
-                })
-
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update);
-#endif
+                });
 
 
             Handle = builder.BindWithState(target, (value, state) => { state.orthographicSize = value; });

@@ -2,9 +2,6 @@
 using LitMotion;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
-#if UNITY_EDITOR
-using LitMotion.Editor;
-#endif
 
 namespace LMMCFeedbacks
 {
@@ -27,13 +24,11 @@ namespace LMMCFeedbacks
         public MotionHandle Create()
         {
             if (Handle.IsActive()) Handle.Complete();
-            Handle = LMotion.Create(0f, 0f, holdTime)
+            var builder = LMotion.Create(0f, 0f, holdTime)
                 .WithDelay(options.delayTime)
-                .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update)
-#endif
-                .RunWithoutBinding();
+                .WithLoops(options.loop ? options.loopCount : 1, options.loopType);
+
+            Handle = builder.RunWithoutBinding();
             return Handle;
         }
 

@@ -2,7 +2,6 @@
 #if UNITY_EDITOR
 using System;
 using Cinemachine;
-using LitMotion.Editor;
 using LitMotion;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
@@ -48,11 +47,7 @@ namespace LMMCFeedbacks
                 .WithOnComplete(() =>
                 {
                     if (options.initializeOnComplete) Initialize();
-                })
-
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update);
-#endif
+                });
 
 
             Handle = builder.BindWithState(target, (value, state) => { state.m_Lens.FieldOfView = value; });

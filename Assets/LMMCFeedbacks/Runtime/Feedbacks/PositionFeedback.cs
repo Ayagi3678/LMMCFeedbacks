@@ -4,9 +4,6 @@ using LitMotion.Extensions;
 using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Enums;
 using UnityEngine;
-#if UNITY_EDITOR
-using LitMotion.Editor;
-#endif
 
 namespace LMMCFeedbacks
 {
@@ -52,11 +49,7 @@ namespace LMMCFeedbacks
                 .WithOnComplete(() =>
                 {
                     if (options.initializeOnComplete) Initialize();
-                })
-
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update);
-#endif
+                });
 
 
             Handle = space switch

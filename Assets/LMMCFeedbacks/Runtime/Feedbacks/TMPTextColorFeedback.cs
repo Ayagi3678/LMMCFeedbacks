@@ -3,9 +3,6 @@ using LitMotion;
 using LMMCFeedbacks.Runtime;
 using TMPro;
 using UnityEngine;
-#if UNITY_EDITOR
-using LitMotion.Editor;
-#endif
 
 namespace LMMCFeedbacks
 {
@@ -46,11 +43,7 @@ namespace LMMCFeedbacks
                 .WithOnComplete(() =>
                 {
                     if (options.initializeOnComplete) Initialize();
-                })
-
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update);
-#endif
+                });
 
 
             Handle = builder.BindWithState(target, (value, state) => state.color = value);

@@ -4,9 +4,6 @@ using LitMotion.Extensions;
 using LMMCFeedbacks.Runtime;
 using TMPro;
 using UnityEngine;
-#if UNITY_EDITOR
-using LitMotion.Editor;
-#endif
 
 namespace LMMCFeedbacks
 {
@@ -54,11 +51,7 @@ namespace LMMCFeedbacks
                 {
                     if (options.initializeOnComplete) Initialize();
                 })
-                .WithRichText(richText)
-
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update);
-#endif
+                .WithRichText(richText);
 
 
             if (scrambleMode != ScrambleMode.Custom) builder.WithScrambleChars(scrambleMode);

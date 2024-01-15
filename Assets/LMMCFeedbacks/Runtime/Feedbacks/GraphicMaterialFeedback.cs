@@ -4,9 +4,6 @@ using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Enums;
 using UnityEngine;
 using UnityEngine.UI;
-#if UNITY_EDITOR
-using LitMotion.Editor;
-#endif
 
 namespace LMMCFeedbacks
 {
@@ -96,10 +93,6 @@ namespace LMMCFeedbacks
                     {
                         if (options.initializeOnComplete) Initialize();
                     })
-
-#if UNITY_EDITOR
-                    .WithScheduler(EditorMotionScheduler.Update)
-#endif
                     .Bind(value => { _materialCache.SetFloat(propertyName, value); }),
                 TweenMaterialPropertyType.Int => LMotion.Create(intZero, intOne, durationTime)
                     .WithDelay(options.delayTime)
@@ -110,10 +103,6 @@ namespace LMMCFeedbacks
                     {
                         if (options.initializeOnComplete) Initialize();
                     })
-
-#if UNITY_EDITOR
-                    .WithScheduler(EditorMotionScheduler.Update)
-#endif
                     .Bind(value => { _materialCache.SetInt(propertyName, value); }),
                 TweenMaterialPropertyType.Color => LMotion.Create(colorZero, colorOne, durationTime)
                     .WithDelay(options.delayTime)
@@ -124,10 +113,6 @@ namespace LMMCFeedbacks
                     {
                         if (options.initializeOnComplete) Initialize();
                     })
-
-#if UNITY_EDITOR
-                    .WithScheduler(EditorMotionScheduler.Update)
-#endif
                     .Bind(value => { _materialCache.SetColor(propertyName, value); }),
                 TweenMaterialPropertyType.Vector2 => LMotion.Create(vector2Zero, vector2One, durationTime)
                     .WithDelay(options.delayTime)
@@ -138,10 +123,6 @@ namespace LMMCFeedbacks
                     {
                         if (options.initializeOnComplete) Initialize();
                     })
-
-#if UNITY_EDITOR
-                    .WithScheduler(EditorMotionScheduler.Update)
-#endif
                     .Bind(value => { _materialCache.SetVector(propertyName, value); }),
                 TweenMaterialPropertyType.Vector3 => LMotion.Create(vector3Zero, vector3One, durationTime)
                     .WithDelay(options.delayTime)
@@ -152,10 +133,6 @@ namespace LMMCFeedbacks
                     {
                         if (options.initializeOnComplete) Initialize();
                     })
-
-#if UNITY_EDITOR
-                    .WithScheduler(EditorMotionScheduler.Update)
-#endif
                     .Bind(value => { _materialCache.SetVector(propertyName, value); }),
                 _ => throw new ArgumentOutOfRangeException()
             };

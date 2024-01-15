@@ -3,9 +3,6 @@ using LitMotion;
 using LitMotion.Extensions;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
-#if UNITY_EDITOR
-using LitMotion.Editor;
-#endif
 
 namespace LMMCFeedbacks
 {
@@ -48,11 +45,9 @@ namespace LMMCFeedbacks
                 .WithOnComplete(() =>
                 {
                     if (options.initializeOnComplete) Initialize();
-                })
+                });
 
-#if UNITY_EDITOR
-                .WithScheduler(EditorMotionScheduler.Update);
-#endif
+
             Handle = builder.BindToAnchoredPosition(target);
             return Handle;
         }
