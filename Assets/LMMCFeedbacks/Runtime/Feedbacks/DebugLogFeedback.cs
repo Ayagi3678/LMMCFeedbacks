@@ -32,6 +32,7 @@ namespace LMMCFeedbacks
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithOnComplete(() => { Debug.Log("<color=green>" + playMessage + "</color>"); });
 
+            if (options.ignoreTimeScale) builder.WithScheduler(MotionScheduler.UpdateIgnoreTimeScale);
             Handle = builder.RunWithoutBinding();
             return Handle;
         }

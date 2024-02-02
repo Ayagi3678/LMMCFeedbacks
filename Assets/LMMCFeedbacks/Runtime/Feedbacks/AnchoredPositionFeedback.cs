@@ -39,7 +39,6 @@ namespace LMMCFeedbacks
             var builder = LMotion
                 .Create(isRelative ? zero + target.anchoredPosition : zero,
                     isRelative ? one + target.anchoredPosition : one, durationTime).WithDelay(options.delayTime)
-                .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
                 .WithOnComplete(() =>
@@ -48,6 +47,7 @@ namespace LMMCFeedbacks
                 });
 
 
+            if (options.ignoreTimeScale) builder.WithScheduler(MotionScheduler.UpdateIgnoreTimeScale);
             Handle = builder.BindToAnchoredPosition(target);
             return Handle;
         }

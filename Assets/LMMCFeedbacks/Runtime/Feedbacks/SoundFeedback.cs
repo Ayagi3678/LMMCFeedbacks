@@ -31,6 +31,7 @@ namespace LMMCFeedbacks
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithOnComplete(() => { FeedbackSoundManager.Instance.PlaySound(clip, volumeScale); });
 
+            if (options.ignoreTimeScale) builder.WithScheduler(MotionScheduler.UpdateIgnoreTimeScale);
             Handle = builder.RunWithoutBinding();
             return Handle;
         }

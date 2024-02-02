@@ -86,7 +86,6 @@ namespace LMMCFeedbacks
             {
                 TweenMaterialPropertyType.Float => LMotion.Create(floatZero, floatOne, durationTime)
                     .WithDelay(options.delayTime)
-                    .WithIgnoreTimeScale(options.ignoreTimeScale)
                     .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                     .WithEase(ease)
                     .WithOnComplete(() =>
@@ -96,7 +95,6 @@ namespace LMMCFeedbacks
                     .Bind(value => { _materialCache.SetFloat(propertyName, value); }),
                 TweenMaterialPropertyType.Int => LMotion.Create(intZero, intOne, durationTime)
                     .WithDelay(options.delayTime)
-                    .WithIgnoreTimeScale(options.ignoreTimeScale)
                     .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                     .WithEase(ease)
                     .WithOnComplete(() =>
@@ -106,7 +104,6 @@ namespace LMMCFeedbacks
                     .Bind(value => { _materialCache.SetInt(propertyName, value); }),
                 TweenMaterialPropertyType.Color => LMotion.Create(colorZero, colorOne, durationTime)
                     .WithDelay(options.delayTime)
-                    .WithIgnoreTimeScale(options.ignoreTimeScale)
                     .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                     .WithEase(ease)
                     .WithOnComplete(() =>
@@ -116,7 +113,6 @@ namespace LMMCFeedbacks
                     .Bind(value => { _materialCache.SetColor(propertyName, value); }),
                 TweenMaterialPropertyType.Vector2 => LMotion.Create(vector2Zero, vector2One, durationTime)
                     .WithDelay(options.delayTime)
-                    .WithIgnoreTimeScale(options.ignoreTimeScale)
                     .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                     .WithEase(ease)
                     .WithOnComplete(() =>
@@ -126,7 +122,6 @@ namespace LMMCFeedbacks
                     .Bind(value => { _materialCache.SetVector(propertyName, value); }),
                 TweenMaterialPropertyType.Vector3 => LMotion.Create(vector3Zero, vector3One, durationTime)
                     .WithDelay(options.delayTime)
-                    .WithIgnoreTimeScale(options.ignoreTimeScale)
                     .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                     .WithEase(ease)
                     .WithOnComplete(() =>

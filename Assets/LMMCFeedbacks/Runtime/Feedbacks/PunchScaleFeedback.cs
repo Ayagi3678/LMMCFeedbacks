@@ -41,7 +41,6 @@ namespace LMMCFeedbacks
             var builder = LMotion.Punch
                     .Create(isRelative ? target.localScale + startValue : startValue, strength, durationTime)
                     .WithDelay(options.delayTime)
-                    .WithIgnoreTimeScale(options.ignoreTimeScale)
                     .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                     .WithFrequency(frequency)
                     .WithDampingRatio(dampingRatio)
@@ -52,6 +51,7 @@ namespace LMMCFeedbacks
                     })
                 ;
 
+            if (options.ignoreTimeScale) builder.WithScheduler(MotionScheduler.UpdateIgnoreTimeScale);
             Handle = builder.BindToLocalScale(target);
             return Handle;
         }

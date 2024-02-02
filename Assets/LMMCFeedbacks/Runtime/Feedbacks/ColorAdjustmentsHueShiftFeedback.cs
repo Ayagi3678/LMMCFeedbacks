@@ -46,7 +46,6 @@ namespace LMMCFeedbacks
                     FeedbackVolumeManager.Instance.volume.TryGetVolumeComponent<ColorAdjustments>();
             _colorAdjustmentsCache.active = true;
             var builder = LMotion.Create(zero, one, durationTime).WithDelay(options.delayTime)
-                .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
                 .WithOnComplete(() =>
@@ -55,6 +54,7 @@ namespace LMMCFeedbacks
                 });
 
 
+            if (options.ignoreTimeScale) builder.WithScheduler(MotionScheduler.UpdateIgnoreTimeScale);
             Handle = builder.BindWithState(_colorAdjustmentsCache,
                 (value, state) => { state.hueShift.Override(value); });
             return Handle;

@@ -45,7 +45,6 @@ namespace LMMCFeedbacks
             var builder = LMotion.Shake.Create(isRelative ? target.localScale + startValue : startValue,
                         strength, durationTime)
                     .WithDelay(options.delayTime)
-                    .WithIgnoreTimeScale(options.ignoreTimeScale)
                     .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                     .WithFrequency(frequency)
                     .WithDampingRatio(dampingRatio)
@@ -57,6 +56,7 @@ namespace LMMCFeedbacks
                 ;
 
             if (!randomSeed) builder.WithRandomSeed(seed);
+            if (options.ignoreTimeScale) builder.WithScheduler(MotionScheduler.UpdateIgnoreTimeScale);
             Handle = builder.BindToLocalScale(target);
             return Handle;
         }

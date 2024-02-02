@@ -69,6 +69,7 @@ namespace LMMCFeedbacks
                     if (setParent) instance.transform.SetParent(parent);
                 });
 
+            if (options.ignoreTimeScale) builder.WithScheduler(MotionScheduler.UpdateIgnoreTimeScale);
             Handle = builder.RunWithoutBinding();
             return Handle;
         }

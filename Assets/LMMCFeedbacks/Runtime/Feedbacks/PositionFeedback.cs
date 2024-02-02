@@ -43,7 +43,6 @@ namespace LMMCFeedbacks
                     isRelative ? currentPosition + one : one
                     , durationTime)
                 .WithDelay(options.delayTime)
-                .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
                 .WithOnComplete(() =>

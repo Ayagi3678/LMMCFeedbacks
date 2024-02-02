@@ -47,7 +47,6 @@ namespace LMMCFeedbacks
             var builder = LMotion.Shake
                 .Create(isRelative ? target.position + startValue : startValue, strength, durationTime)
                 .WithDelay(options.delayTime)
-                .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithFrequency(frequency)
                 .WithDampingRatio(dampingRatio)

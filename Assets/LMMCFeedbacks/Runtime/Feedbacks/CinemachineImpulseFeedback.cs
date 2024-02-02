@@ -43,7 +43,6 @@ namespace LMMCFeedbacks
         {
             Complete();
             var builder = LMotion.Create(0, 0, 0).WithDelay(options.delayTime)
-                .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithOnComplete(() =>
                 {
@@ -63,6 +62,7 @@ namespace LMMCFeedbacks
                     }
                 });
 
+            if (options.ignoreTimeScale) builder.WithScheduler(MotionScheduler.UpdateIgnoreTimeScale);
             Handle = builder.RunWithoutBinding();
             return Handle;
         }

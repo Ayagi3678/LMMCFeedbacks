@@ -44,7 +44,6 @@ namespace LMMCFeedbacks
             Complete();
             if (!isInitialized) InitialSetup();
             var builder = LMotion.String.Create128Bytes(zero, one, durationTime).WithDelay(options.delayTime)
-                .WithIgnoreTimeScale(options.ignoreTimeScale)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType)
                 .WithEase(ease)
                 .WithOnComplete(() =>
@@ -57,6 +56,7 @@ namespace LMMCFeedbacks
             if (scrambleMode != ScrambleMode.Custom) builder.WithScrambleChars(scrambleMode);
             else builder.WithScrambleChars(scrambleChars);
 
+            if (options.ignoreTimeScale) builder.WithScheduler(MotionScheduler.UpdateIgnoreTimeScale);
             Handle = builder.BindToText(target);
             return Handle;
         }

@@ -28,6 +28,7 @@ namespace LMMCFeedbacks
                 .WithDelay(options.delayTime)
                 .WithLoops(options.loop ? options.loopCount : 1, options.loopType);
 
+            if (options.ignoreTimeScale) builder.WithScheduler(MotionScheduler.UpdateIgnoreTimeScale);
             Handle = builder.RunWithoutBinding();
             return Handle;
         }
