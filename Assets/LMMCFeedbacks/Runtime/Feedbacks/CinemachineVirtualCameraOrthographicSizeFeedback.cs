@@ -1,10 +1,8 @@
 ﻿# if USE_CINEMACHINE
-#if UNITY_EDITOR
 using System;
 using LitMotion;
 using LMMCFeedbacks.Runtime;
 using UnityEngine;
-#endif
 
 namespace LMMCFeedbacks
 {

@@ -1,5 +1,4 @@
 ﻿#if USE_CINEMACHINE
-#if UNITY_EDITOR
 using System;
 using Cinemachine;
 using LitMotion;
@@ -7,7 +6,6 @@ using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Enums;
 using UnityEngine;
 using Random = UnityEngine.Random;
-#endif
 
 namespace LMMCFeedbacks
 {

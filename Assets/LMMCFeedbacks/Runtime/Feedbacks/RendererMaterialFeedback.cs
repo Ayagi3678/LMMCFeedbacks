@@ -3,9 +3,7 @@ using LitMotion;
 using LMMCFeedbacks.Runtime;
 using LMMCFeedbacks.Runtime.Enums;
 using UnityEngine;
-#if UNITY_EDITOR
 using LitMotion.Editor;
-#endif
 
 namespace LMMCFeedbacks
 {
