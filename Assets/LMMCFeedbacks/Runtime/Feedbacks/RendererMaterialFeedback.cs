@@ -129,7 +129,6 @@ namespace LMMCFeedbacks
                     {
                         if (options.initializeOnComplete) Initialize();
                     })
-                    .WithScheduler(EditorMotionScheduler.Update)
                     .BindWithState(_materialCache, (value, state) => { state.SetVector(propertyName, value); }),
                 _ => throw new ArgumentOutOfRangeException()
             };
